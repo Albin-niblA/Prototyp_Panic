@@ -40,7 +40,7 @@ public class Projectile {
     }
 
     public void draw(GraphicsContext gc) {
-        gc.setFill(Color.ALICEBLUE);
+        gc.setFill(Color.RED);
         gc.fillOval(x - RADIUS, y - RADIUS, RADIUS * 3, RADIUS * 3);
     }
 

@@ -104,7 +104,7 @@ public class GamePanel {
     private void render(GraphicsContext gc) {
         // Bakgrund
 
-        gc.setFill(Color.BLACK);
+        gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, WIDTH, HEIGHT);
 
         // Projektiler
