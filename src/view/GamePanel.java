@@ -23,6 +23,7 @@ public class GamePanel {
     private final int WIDTH = 800;
     private final int HEIGHT = 600;
     private final ProjectileManager pm = new ProjectileManager(WIDTH, HEIGHT);
+    private int projectileTexture = 0;
 
     private final Player player = new Player(WIDTH / 2.0, HEIGHT / 2.0);
     private final List<Projectile> projectiles = new ArrayList<>();
@@ -32,7 +33,7 @@ public class GamePanel {
     private boolean shooting = false;
 
     private double shootCooldown = 0;
-    private static final double SHOOT_INTERVAL = 0.18;
+    private static final double SHOOT_INTERVAL = 0.08;
 
     public GamePanel(Stage stage) {
         this.stage = stage;
@@ -56,6 +57,13 @@ public class GamePanel {
             if (k == KeyCode.S) player.setMoveDown(true);
             if (k == KeyCode.A) player.setMoveLeft(true);
             if (k == KeyCode.D) player.setMoveRight(true);
+            if (k == KeyCode.Q) {
+                if (projectileTexture >= pm.getPROJECTILE_TEXTURES_COUNT() - 1) {
+                    projectileTexture = 0;
+                } else {
+                    projectileTexture++;
+                }
+            }
         });
 
         scene.setOnKeyReleased(e -> {
@@ -91,7 +99,7 @@ public class GamePanel {
         if (shootCooldown > 0) shootCooldown -= delta;
 
         if (shooting && shootCooldown <= 0) {
-            pm.addProjectile(player.getX(), player.getY(), 8, mouseX, mouseY, 1000,0, 0);
+            pm.addProjectile(player.getX(), player.getY(), 10, mouseX, mouseY, 1000, projectileTexture, 0);
             //projectiles.add(new Projectile(player.getX(), player.getY(), mouseX, mouseY));
             shootCooldown = SHOOT_INTERVAL;
         }

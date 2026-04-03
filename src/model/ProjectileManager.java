@@ -1,13 +1,12 @@
 package model;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
 
 public class ProjectileManager {
     // This class will store coordinates, velocity and handle all bullets on screen for each gametick
     private final int MAX_PROJECTILES = 1000;
-    private final int PROJECTILE_TEXTURES_COUNT = 1;
+    private final int PROJECTILE_TEXTURES_COUNT = 3;
     private int projectileCount = 0;
     private final double X_VALUE_MAX;
     private final double Y_VALUE_MAX;
@@ -34,7 +33,9 @@ public class ProjectileManager {
     //projectile textures
     private final Image[] projectileTextures = new Image[PROJECTILE_TEXTURES_COUNT];
     private void initTextures() {
-        projectileTextures[0] = new Image(getClass().getResourceAsStream("/util/images/bullet1.png"));
+        projectileTextures[0] = new Image(getClass().getResourceAsStream("/util/images/projectiles/bullet1.png"));
+        projectileTextures[1] = new Image(getClass().getResourceAsStream("/util/images/projectiles/arrow.png"));
+        projectileTextures[2] = new Image(getClass().getResourceAsStream("/util/images/projectiles/rocket.png"));
     }
 
     //
@@ -103,7 +104,7 @@ public class ProjectileManager {
             int texID = projectileID[i];
             // check that texture id exists in range
             // then adds the projectile index to the array that will handle that texture
-            if (texID <= 0 || texID >= projectileTextures.length) {
+            if (texID >= 0 && texID < projectileTextures.length) {
                 textureGroup[texID][groupCount[texID]++] = i;
             }
         }
@@ -114,9 +115,19 @@ public class ProjectileManager {
                 for (int j = 0; j < groupCount[i]; j++) {
                     int k = textureGroup[i][j];
 
-                    // handle effects in the future here
+                    double px = posX[k];
+                    double py = posY[k];
+                    double r = radius[k];
+                    // calculates angle of the projectile
+                    double angleDeg = Math.toDegrees(Math.atan2(velY[k], velX[k]));
+                    // handle effects in the future here below
 
-                    gc.drawImage(texture, posX[k] - radius[k], posY[k] - radius[k], radius[k] * 2, radius[k] * 2);
+                    // saves the current image, recenters, rotates and then draws the rotated image, then restores to the saved image.
+                    gc.save();
+                    gc.translate(px, py);
+                    gc.rotate(angleDeg);
+                    gc.drawImage(texture, -r, -r, r*2, r*2);
+                    gc.restore();
                 }
             }
         }
@@ -127,4 +138,5 @@ public class ProjectileManager {
     public double getY(int i) { return posY[i]; }
     public double getRadius(int i) { return radius[i]; }
     public int getProjectileID(int i) { return projectileID[i]; }
+    public int getPROJECTILE_TEXTURES_COUNT() { return PROJECTILE_TEXTURES_COUNT; }
 }
