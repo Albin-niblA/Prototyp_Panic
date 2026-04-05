@@ -10,4 +10,29 @@ public abstract class Entity {
     protected int health = 100;
     protected double damageCooldown = 0.0;
     protected double DAMAGE_COOLDOWN_DURATION = 0.75;
+    protected boolean dead = false;
+
+    public boolean isDead() {
+        return dead;
+    }
+
+    public double getSize() {
+        return size;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
 }

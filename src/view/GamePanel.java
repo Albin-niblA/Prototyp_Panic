@@ -9,6 +9,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import model.EnemyHandler;
 import model.Player;
 import model.Projectile;
 import model.ProjectileManager;
@@ -22,6 +23,7 @@ public class GamePanel {
     private final Scene scene;
     private final int WIDTH = 800;
     private final int HEIGHT = 600;
+    private final EnemyHandler eh = new EnemyHandler(WIDTH, HEIGHT);
     private final ProjectileManager pm = new ProjectileManager(WIDTH, HEIGHT);
     private int projectileTexture = 0;
 
@@ -89,6 +91,7 @@ public class GamePanel {
             if (e.getButton() == MouseButton.PRIMARY) shooting = !shooting;
         });
 
+        eh.spawnRandom(0);
     }
 
     private void update(double delta) {
@@ -124,6 +127,7 @@ public class GamePanel {
 
         // Spelare
         player.draw(gc);
+        eh.drawAll(gc);
     }
 
     public void show() {
