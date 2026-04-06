@@ -22,20 +22,39 @@ public class EnemyHandler {
     public EnemyHandler(int x, int y) {
         this.X_VALUE_MAX = x;
         this.Y_VALUE_MAX = y;
+        initTextures();
     }
 
 
-    public void update(double deltaTime) {
+    //uppdaterar spelarens koordinater på skärmen
+    public void update(double deltaTime, double playerX, double playerY) {
         Iterator<Enemy> it = enemies.iterator();
 
         while (it.hasNext()) {
             Enemy e = it.next();
-            e.update();
+            e.update(deltaTime, playerX, playerY);
 
             if (e.isDead()) {
                 it.remove();
             }
         }
+    }
+
+    public boolean checkHit(double px, double py, double pr) {
+        Iterator<Enemy> it = enemies.iterator();
+        while (it.hasNext()) {
+            Enemy e = it.next();
+            double dx = px - e.getX();
+            double dy = py - e.getY();
+            double dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < pr + e.getSize() / 2) {
+                e.takeDamage(100);
+                if (e.isDead()) it.remove();
+                return true;
+            }
+        }
+        return false;
     }
 
     public void drawAll(GraphicsContext gc) {

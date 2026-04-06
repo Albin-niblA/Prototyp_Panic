@@ -32,7 +32,9 @@ public class Main extends Application implements GameListener {
                 WeaponSelectDialog dialog = new WeaponSelectDialog(stage);
                 int weaponId = dialog.showAndWait();
                 new GamePanel(stage, weaponId).show();
-            }            case EXIT  -> Platform.exit();
+            }
+            case EXIT  -> Platform.exit();
+
             default    -> { } // Settings och Statistics
         }
     }

@@ -16,6 +16,14 @@ public abstract class Entity {
         return dead;
     }
 
+    public void takeDamage(int amount) {
+        if (damageCooldown <= 0) {
+            health -= amount;
+            damageCooldown = DAMAGE_COOLDOWN_DURATION;
+            if (health <= 0) dead = true;
+        }
+    }
+
     public double getSize() {
         return size;
     }

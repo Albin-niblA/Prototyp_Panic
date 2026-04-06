@@ -8,8 +8,12 @@ public class Slime extends Enemy {
     }
 
     public Slime(double x, double y) {
-        super();
-        setX(x);
-        setY(y);
+        this.x = x;
+        this.y = y;
+        this.size = 40;
+        this.health = 50;
+        this.maxHealth = 50;
+        this.movementSpeed = 80;
+        this.setTextureID(0);
     }
 }

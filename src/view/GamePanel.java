@@ -26,6 +26,8 @@ public class GamePanel {
     private final EnemyHandler eh = new EnemyHandler(WIDTH, HEIGHT);
     private final ProjectileManager pm = new ProjectileManager(WIDTH, HEIGHT);
     private int projectileTexture = 0;
+    private double spawnTimer = 0;
+    private static final double SPAWN_INTERVAL = 3.0; // seconds
 
     private final Player player = new Player(WIDTH / 2.0, HEIGHT / 2.0);
     private final List<Projectile> projectiles = new ArrayList<>();
@@ -95,7 +97,7 @@ public class GamePanel {
     }
 
     private void update(double delta) {
-        player.update(delta, WIDTH, HEIGHT);
+     /*   player.update(delta, WIDTH, HEIGHT);
 
         if (shootCooldown > 0) shootCooldown -= delta;
 
@@ -104,7 +106,7 @@ public class GamePanel {
             //projectiles.add(new Projectile(player.getX(), player.getY(), mouseX, mouseY));
             shootCooldown = SHOOT_INTERVAL;
         }
-        pm.update(delta);
+        pm.update(delta);*/
         /*
         Iterator<Projectile> it = projectiles.iterator();
         while (it.hasNext()) {
@@ -113,7 +115,37 @@ public class GamePanel {
             if (p.isDead()) it.remove();
         }
          */
+        player.update(delta, WIDTH, HEIGHT);
+
+        if (shootCooldown > 0) shootCooldown -= delta;
+
+        if (shooting && shootCooldown <= 0) {
+            pm.addProjectile(player.getX(), player.getY(), 10, mouseX, mouseY, 1000, projectileTexture, 0);
+            shootCooldown = SHOOT_INTERVAL;
+        }
+
+        pm.update(delta);
+        eh.update(delta, player.getX(), player.getY());
+        checkCollisions();
+        spawnTimer += delta;
+        if (spawnTimer >= SPAWN_INTERVAL) {
+            eh.spawnRandom(0);
+            spawnTimer = 0;
+        }
     }
+
+    private void checkCollisions() {
+        for (int i = 0; i < pm.getCount(); i++) {
+            double px = pm.getX(i);
+            double py = pm.getY(i);
+            double pr = pm.getRadius(i);
+
+            if (eh.checkHit(px, py, pr)) {
+                pm.deleteProjectile(i--); // remove projectile on hit
+            }
+        }
+    }
+
 
     private void render(GraphicsContext gc) {
         // Bakgrund
