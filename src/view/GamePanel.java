@@ -131,9 +131,14 @@ public class GamePanel {
 
     private void render(GraphicsContext gc) {
         // Bakgrund
-
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, WIDTH, HEIGHT);
+
+        // Grid
+        gc.setStroke(Color.GREY);
+        gc.setLineWidth(1);
+        for (int x = 0; x < WIDTH;  x += 60) gc.strokeLine(x, 0, x, HEIGHT);
+        for (int y = 0; y < HEIGHT; y += 60) gc.strokeLine(0, y, WIDTH, y);
 
         // Projektiler
         pm.drawAll(gc);
