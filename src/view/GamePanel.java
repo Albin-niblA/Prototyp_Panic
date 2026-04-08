@@ -45,6 +45,7 @@ public class GamePanel {
 
         Canvas canvas = new Canvas(WIDTH, HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setImageSmoothing(false);
 
         StackPane root = new StackPane(canvas);
         scene = new Scene(root, WIDTH, HEIGHT);
