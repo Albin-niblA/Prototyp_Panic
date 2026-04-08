@@ -13,10 +13,12 @@ import model.EnemyHandler;
 import model.Player;
 import model.Projectile;
 import model.ProjectileManager;
+import util.sounds.SoundManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class GamePanel {
     private final Stage stage;
@@ -31,6 +33,8 @@ public class GamePanel {
 
     private final Player player = new Player(WIDTH / 2.0, HEIGHT / 2.0);
     private final List<Projectile> projectiles = new ArrayList<>();
+    Random rand = new Random();
+    int type = rand.nextInt(2);
 
     private double mouseX = 0;
     private double mouseY = 0;
@@ -42,6 +46,7 @@ public class GamePanel {
     public GamePanel(Stage stage, int initialWeapon) {
         this.stage = stage;
         this.projectileTexture = initialWeapon;
+        SoundManager.init();
 
         Canvas canvas = new Canvas(WIDTH, HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -93,7 +98,7 @@ public class GamePanel {
             if (e.getButton() == MouseButton.PRIMARY) shooting = !shooting;
         });
 
-        eh.spawnRandom(0);
+        eh.spawnRandom();
     }
 
     private void update(double delta) {
@@ -104,6 +109,7 @@ public class GamePanel {
         if (shooting && shootCooldown <= 0) {
             pm.addProjectile(player.getX(), player.getY(), 10, mouseX, mouseY, 1000, projectileTexture, 0);
             shootCooldown = SHOOT_INTERVAL;
+            SoundManager.playShoot();
         }
 
         pm.update(delta);
@@ -111,7 +117,7 @@ public class GamePanel {
         checkCollisions();
         spawnTimer += delta;
         if (spawnTimer >= SPAWN_INTERVAL) {
-            eh.spawnRandom(0);
+            eh.spawnRandom();
             spawnTimer = 0;
         }
     }
@@ -136,7 +142,7 @@ public class GamePanel {
         player.reset(WIDTH / 2.0, HEIGHT / 2.0);
         pm.clear();
         eh.clear();
-        eh.spawnRandom(0);
+        eh.spawnRandom();
         shootCooldown = 0;
         shooting = false;
     }

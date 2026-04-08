@@ -13,7 +13,7 @@ public class Slime extends Enemy {
         this.size = 40;
         this.health = 50;
         this.maxHealth = 50;
-        this.movementSpeed = 80;
+        this.movementSpeed = 30;
         this.setTextureID(0);
     }
 }

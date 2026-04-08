@@ -17,11 +17,8 @@ public abstract class Entity {
     }
 
     public void takeDamage(int amount) {
-        if (damageCooldown <= 0) {
             health -= amount;
-            damageCooldown = DAMAGE_COOLDOWN_DURATION;
             if (health <= 0) dead = true;
-        }
     }
 
     public void setHealth(int health) {
