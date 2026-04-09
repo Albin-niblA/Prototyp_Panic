@@ -1,48 +1,22 @@
 package model;
 
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import model.enemies.DemonSlime;
-import model.enemies.*;
-
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Random;
+import java.util.List;
 
 public class EnemyHandler {
-    private ArrayList<Enemy> enemies = new ArrayList<>();
-    private final int X_VALUE_MAX;
-    private final int Y_VALUE_MAX;
-    private Random rand = new Random();
-    private final int ENEMY_TEXTURE_COUNT = 2;
-    private final Image[] enemyTextures = new Image[ENEMY_TEXTURE_COUNT];
-    private void initTextures() {
-        enemyTextures[0] = new Image(getClass().getResourceAsStream("/util/images/enemies/slime.png"));
-        enemyTextures[1] = new Image(getClass().getResourceAsStream("/util/images/enemies/demonslime.png"));
-    }
+    private final List<Enemy> enemies = new ArrayList<>();
 
-    public EnemyHandler(int x, int y) {
-        this.X_VALUE_MAX = x;
-        this.Y_VALUE_MAX = y;
-        initTextures();
-    }
-
-
-    //uppdaterar monstrens koordinater på skärmen
     public void update(double deltaTime, double playerX, double playerY) {
         Iterator<Enemy> it = enemies.iterator();
-
         while (it.hasNext()) {
             Enemy e = it.next();
             e.update(deltaTime, playerX, playerY);
-
-            if (e.isDead()) {
-                it.remove();
-            }
+            if (e.isDead()) it.remove();
         }
     }
 
-    public boolean checkHit(double px, double py, double pr) {
+    public boolean checkHit(double px, double py, double pr, int damage) {
         Iterator<Enemy> it = enemies.iterator();
         while (it.hasNext()) {
             Enemy e = it.next();
@@ -51,7 +25,7 @@ public class EnemyHandler {
             double dist = Math.sqrt(dx * dx + dy * dy);
 
             if (dist < pr + e.getSize() / 2) {
-                e.takeDamage(10);
+                e.takeDamage(damage);
                 if (e.isDead()) it.remove();
                 return true;
             }
@@ -59,54 +33,32 @@ public class EnemyHandler {
         return false;
     }
 
-    public boolean checkPlayerHit(double px, double py, double pr) {
+    public Enemy checkPlayerHit(double px, double py, double pr) {
         for (Enemy e : enemies) {
             double dx = px - e.getX();
             double dy = py - e.getY();
             double dist = Math.sqrt(dx * dx + dy * dy);
-            //räknar ut avståndet
 
-            //om avståndet är mindre än storleken på spelaren och radius
             if (dist < pr + e.getSize() / 2) {
-                return true;
+                return e;
             }
         }
-        return false;
+        return null;
+    }
+
+    public void addEnemy(Enemy e) {
+        enemies.add(e);
     }
 
     public void clear() {
         enemies.clear();
     }
 
-    public void drawAll(GraphicsContext gc) {
-        Iterator<Enemy> it = enemies.iterator();
-
-        while (it.hasNext()) {
-            Enemy e = it.next();
-            Image tex = enemyTextures[e.getTextureID()];
-            double size = e.getSize();
-
-            gc.drawImage(tex, e.getX() - size/2, e.getY() - size/2, size, size);
-        }
+    public List<Enemy> getEnemies() {
+        return enemies;
     }
 
-    //Nu kan slimesen spawna direkt på spelarens koordinat, gör om så att slimesen spawnar en radius utanför spelaren
-    public void spawnRandom() {
-        Enemy e;
-        double x = rand.nextDouble(0, X_VALUE_MAX);
-        double y = rand.nextDouble(0, Y_VALUE_MAX);
-        Random rand = new Random();
-        int num = rand.nextInt(2);
-        switch (num) {
-            case 0:
-                e = new Slime(x, y);
-                break;
-            case 1:
-                e = new DemonSlime(x, y);
-                break;
-            default:
-                e = new Slime(x, y);
-        }
-        enemies.add(e);
+    public int getCount() {
+        return enemies.size();
     }
 }

@@ -9,18 +9,16 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class MainMenu {
-    private Stage stage;
-    private Scene scene;
+    private final Stage stage;
+    private final Scene scene;
 
-    public MainMenu(Stage stage, GameListener listener) {
+    public MainMenu(Stage stage, GameListener listener, int width, int height) {
         this.stage = stage;
-
-
 
         Text title = new Text("Prototype Panic");
         title.setFont(new Font(40));
 
-        VBox layout = new VBox(20); // Spacing mellan varje knapp
+        VBox layout = new VBox(20);
         layout.setAlignment(Pos.CENTER);
         layout.getChildren().add(title);
 
@@ -32,7 +30,7 @@ public class MainMenu {
             layout.getChildren().add(btn);
         }
 
-        scene = new Scene(layout, 800, 600);
+        scene = new Scene(layout, width, height);
     }
 
     public void show() {

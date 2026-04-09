@@ -3,9 +3,6 @@ package model.enemies;
 import model.Enemy;
 
 public class Slime extends Enemy {
-    public Slime() {
-        setTextureID(0);
-    }
 
     public Slime(double x, double y) {
         this.x = x;
@@ -14,6 +11,7 @@ public class Slime extends Enemy {
         this.health = 50;
         this.maxHealth = 50;
         this.movementSpeed = 30;
-        this.setTextureID(0);
+        this.contactDamage = 10;
+        this.textureID = 0;
     }
 }

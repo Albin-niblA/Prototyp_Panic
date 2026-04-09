@@ -1,51 +1,26 @@
 package model;
 
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-
 public class ProjectileManager {
-    // This class will store coordinates, velocity and handle all bullets on screen for each gametick
-    private final int MAX_PROJECTILES = 1000;
-    private final int PROJECTILE_TEXTURES_COUNT = 3;
+    private static final int MAX_PROJECTILES = 1000;
     private int projectileCount = 0;
-    private final double X_VALUE_MAX;
-    private final double Y_VALUE_MAX;
+    private final double worldWidth;
+    private final double worldHeight;
 
-    public ProjectileManager(double X_VALUE_MAX, double Y_VALUE_MAX) {
-        this.X_VALUE_MAX = X_VALUE_MAX;
-        this.Y_VALUE_MAX = Y_VALUE_MAX;
-        initTextures();
+    private final double[] posX = new double[MAX_PROJECTILES];
+    private final double[] posY = new double[MAX_PROJECTILES];
+    private final double[] radius = new double[MAX_PROJECTILES];
+    private final double[] velX = new double[MAX_PROJECTILES];
+    private final double[] velY = new double[MAX_PROJECTILES];
+    private final int[] projectileID = new int[MAX_PROJECTILES];
+    private final int[] effectID = new int[MAX_PROJECTILES];
+    private final int[] damage = new int[MAX_PROJECTILES];
+
+    public ProjectileManager(double worldWidth, double worldHeight) {
+        this.worldWidth = worldWidth;
+        this.worldHeight = worldHeight;
     }
-
-    //pos and radius
-    private double[] posX = new double[MAX_PROJECTILES];
-    private double[] posY = new double[MAX_PROJECTILES];
-    private double[] radius = new double[MAX_PROJECTILES];
-
-    //vel (the relative change to the next pos)
-    private double[] velX = new double[MAX_PROJECTILES];
-    private double[] velY = new double[MAX_PROJECTILES];
-
-    //projectile id and effectID for if it needs special treatment
-    private int[] projectileID = new int[MAX_PROJECTILES];
-    private int[] effectID = new int[MAX_PROJECTILES];
-
-    //projectile textures
-    private final Image[] projectileTextures = new Image[PROJECTILE_TEXTURES_COUNT];
-    private void initTextures() {
-        projectileTextures[0] = new Image(getClass().getResourceAsStream("/util/images/projectiles/bullet1.png"));
-        projectileTextures[1] = new Image(getClass().getResourceAsStream("/util/images/projectiles/arrow.png"));
-        projectileTextures[2] = new Image(getClass().getResourceAsStream("/util/images/projectiles/rocket.png"));
-    }
-
-    //
-    private final int[][] textureGroup = new int[PROJECTILE_TEXTURES_COUNT][MAX_PROJECTILES];
-    private final int[] groupCount = new int[PROJECTILE_TEXTURES_COUNT];
 
     public void update(double deltaTime) {
-        // deltaTime is the time between frames
-        // so the game speed shouldn't change based on fps
-
         for (int i = 0; i < projectileCount; i++) {
             posX[i] += velX[i] * deltaTime;
             posY[i] += velY[i] * deltaTime;
@@ -57,21 +32,25 @@ public class ProjectileManager {
     }
 
     private boolean isInBounds(double x, double y) {
-        return (x > 0 && x < X_VALUE_MAX) && (y > 0 && y < Y_VALUE_MAX);
+        return (x > 0 && x < worldWidth) && (y > 0 && y < worldHeight);
     }
 
     public void deleteProjectile(int index) {
-        // replace the projectile with the last element in its place
-        posX[index] = posX[projectileCount - 1];
-        posY[index] = posY[projectileCount - 1];
-        radius[index] = radius[projectileCount - 1];
-        velX[index] = velX[projectileCount - 1];
-        velY[index] = velY[projectileCount - 1];
-        projectileID[index] = projectileID[projectileCount - 1];
-        effectID[index] = effectID[--projectileCount];
+        int last = projectileCount - 1;
+        posX[index] = posX[last];
+        posY[index] = posY[last];
+        radius[index] = radius[last];
+        velX[index] = velX[last];
+        velY[index] = velY[last];
+        projectileID[index] = projectileID[last];
+        effectID[index] = effectID[last];
+        damage[index] = damage[last];
+        projectileCount--;
     }
 
-    public void addProjectile(double x, double y, double r, double targetX, double targetY, double speed, int projID, int effID) {
+    public void addProjectile(double x, double y, double r,
+                               double targetX, double targetY,
+                               double speed, int projID, int effID, int dmg) {
         if (projectileCount >= MAX_PROJECTILES) return;
 
         posX[projectileCount] = x;
@@ -80,7 +59,7 @@ public class ProjectileManager {
 
         double dx = targetX - x;
         double dy = targetY - y;
-        double dist = Math.sqrt(dx*dx + dy*dy);
+        double dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist == 0) {
             velX[projectileCount] = speed;
@@ -91,46 +70,9 @@ public class ProjectileManager {
         }
 
         projectileID[projectileCount] = projID;
-        effectID[projectileCount++] = effID;
-    }
-
-    public void drawAll(GraphicsContext gc) {
-        // resets groupCount
-        for (int i = 0; i < groupCount.length; i++) {
-            groupCount[i] = 0;
-        }
-
-        for (int i = 0; i < projectileCount; i++) {
-            int texID = projectileID[i];
-            // check that texture id exists in range
-            // then adds the projectile index to the array that will handle that texture
-            if (texID >= 0 && texID < projectileTextures.length) {
-                textureGroup[texID][groupCount[texID]++] = i;
-            }
-        }
-
-        for (int i = 0; i < projectileTextures.length; i++) {
-            Image texture = projectileTextures[i];
-            if (texture != null && groupCount[i] != 0) {
-                for (int j = 0; j < groupCount[i]; j++) {
-                    int k = textureGroup[i][j];
-
-                    double px = posX[k];
-                    double py = posY[k];
-                    double r = radius[k];
-                    // calculates angle of the projectile
-                    double angleDeg = Math.toDegrees(Math.atan2(velY[k], velX[k]));
-                    // handle effects in the future here below
-
-                    // saves the current image, recenters, rotates and then draws the rotated image, then restores to the saved image.
-                    gc.save();
-                    gc.translate(px, py);
-                    gc.rotate(angleDeg);
-                    gc.drawImage(texture, -r, -r, r*2, r*2);
-                    gc.restore();
-                }
-            }
-        }
+        effectID[projectileCount] = effID;
+        damage[projectileCount] = dmg;
+        projectileCount++;
     }
 
     public void clear() {
@@ -141,6 +83,8 @@ public class ProjectileManager {
     public double getX(int i) { return posX[i]; }
     public double getY(int i) { return posY[i]; }
     public double getRadius(int i) { return radius[i]; }
-    public int getProjectileID(int i) { return projectileID[i]; }
-    public int getPROJECTILE_TEXTURES_COUNT() { return PROJECTILE_TEXTURES_COUNT; }
+    public double getVelX(int i) { return velX[i]; }
+    public double getVelY(int i) { return velY[i]; }
+    public int getTextureID(int i) { return projectileID[i]; }
+    public int getDamage(int i) { return damage[i]; }
 }

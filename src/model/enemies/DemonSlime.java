@@ -3,9 +3,6 @@ package model.enemies;
 import model.Enemy;
 
 public class DemonSlime extends Enemy {
-    public DemonSlime() {
-        setTextureID(1);
-    }
 
     public DemonSlime(double x, double y) {
         this.x = x;
@@ -14,6 +11,7 @@ public class DemonSlime extends Enemy {
         this.health = 100;
         this.maxHealth = 100;
         this.movementSpeed = 100;
-        this.setTextureID(1);
+        this.contactDamage = 25;
+        this.textureID = 1;
     }
 }

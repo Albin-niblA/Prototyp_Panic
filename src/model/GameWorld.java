@@ -1,0 +1,133 @@
+package model;
+
+import controller.InputHandler;
+import javafx.scene.input.KeyCode;
+import model.wave.WaveManager;
+import model.weapon.Weapon;
+import model.weapon.WeaponType;
+import util.sounds.SoundManager;
+
+public class GameWorld {
+    public static final int WORLD_WIDTH = 3200;
+    public static final int WORLD_HEIGHT = 1800;
+
+    private final Player player;
+    private final EnemyHandler enemyHandler;
+    private final ProjectileManager projectileManager;
+    private final WaveManager waveManager;
+    private final Weapon currentWeapon;
+
+    private GameState state = GameState.RUNNING;
+    private double shootCooldown = 0;
+    private boolean shooting = false;
+
+    public GameWorld(WeaponType weaponType) {
+        player = new Player(WORLD_WIDTH / 2.0, WORLD_HEIGHT / 2.0);
+        enemyHandler = new EnemyHandler();
+        projectileManager = new ProjectileManager(WORLD_WIDTH, WORLD_HEIGHT);
+        waveManager = new WaveManager();
+        currentWeapon = Weapon.fromType(weaponType);
+    }
+
+    public void update(double delta, InputHandler input, Camera camera) {
+        if (state != GameState.RUNNING) return;
+
+        // Player movement
+        player.setMoving(
+            input.isHeld(KeyCode.W),
+            input.isHeld(KeyCode.S),
+            input.isHeld(KeyCode.A),
+            input.isHeld(KeyCode.D)
+        );
+        player.update(delta, WORLD_WIDTH, WORLD_HEIGHT);
+
+        // Shooting
+        shootCooldown -= delta;
+        if (shooting && shootCooldown <= 0) {
+            double worldMouseX = input.getMouseX() + camera.getOffsetX();
+            double worldMouseY = input.getMouseY() + camera.getOffsetY();
+            projectileManager.addProjectile(
+                player.getX(), player.getY(),
+                currentWeapon.getProjectileRadius(),
+                worldMouseX, worldMouseY,
+                currentWeapon.getProjectileSpeed(),
+                currentWeapon.getTextureId(),
+                0,
+                currentWeapon.getDamage()
+            );
+            shootCooldown = currentWeapon.getFireInterval();
+            SoundManager.playShoot();
+        }
+
+        // Update systems
+        projectileManager.update(delta);
+        enemyHandler.update(delta, player.getX(), player.getY());
+        checkCollisions();
+        waveManager.update(delta, enemyHandler, player.getX(), player.getY());
+    }
+
+    private void checkCollisions() {
+        // Projectile vs Enemy
+        for (int i = 0; i < projectileManager.getCount(); i++) {
+            double px = projectileManager.getX(i);
+            double py = projectileManager.getY(i);
+            double pr = projectileManager.getRadius(i);
+            int dmg = projectileManager.getDamage(i);
+
+            if (enemyHandler.checkHit(px, py, pr, dmg)) {
+                projectileManager.deleteProjectile(i--);
+            }
+        }
+
+        // Enemy vs Player
+        if (player.getDamageCooldown() <= 0) {
+            Enemy hitBy = enemyHandler.checkPlayerHit(
+                player.getX(), player.getY(), player.getSize() / 2
+            );
+            if (hitBy != null) {
+                player.takeDamage(hitBy.getContactDamage());
+                if (player.isDead()) {
+                    state = GameState.GAME_OVER;
+                    shooting = false;
+                }
+            }
+        }
+    }
+
+    public void toggleShooting() {
+        if (state == GameState.RUNNING) {
+            shooting = !shooting;
+        }
+    }
+
+    public void pause() {
+        if (state == GameState.RUNNING) {
+            state = GameState.PAUSED;
+            shooting = false;
+            player.setMoving(false, false, false, false);
+        }
+    }
+
+    public void resume() {
+        if (state == GameState.PAUSED) {
+            state = GameState.RUNNING;
+        }
+    }
+
+    public void reset() {
+        player.reset(WORLD_WIDTH / 2.0, WORLD_HEIGHT / 2.0);
+        projectileManager.clear();
+        enemyHandler.clear();
+        waveManager.reset();
+        shootCooldown = 0;
+        shooting = false;
+        state = GameState.RUNNING;
+    }
+
+    public GameState getState() { return state; }
+    public Player getPlayer() { return player; }
+    public EnemyHandler getEnemyHandler() { return enemyHandler; }
+    public ProjectileManager getProjectileManager() { return projectileManager; }
+    public WaveManager getWaveManager() { return waveManager; }
+    public Weapon getCurrentWeapon() { return currentWeapon; }
+}

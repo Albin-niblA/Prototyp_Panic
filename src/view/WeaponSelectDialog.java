@@ -10,11 +10,12 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.weapon.WeaponType;
 
 public class WeaponSelectDialog {
 
     private final Stage dialog;
-    private int selectedWeapon = 0;
+    private WeaponType selectedWeapon = WeaponType.BULLET;
 
     public WeaponSelectDialog(Stage owner) {
         dialog = new Stage();
@@ -24,29 +25,32 @@ public class WeaponSelectDialog {
         Label title = new Label("Choose your weapon:");
 
         ToggleGroup group = new ToggleGroup();
-        String[] names = {"Bullet", "Arrow", "Rocket"};
-        RadioButton[] buttons = new RadioButton[names.length];
+        WeaponType[] types = WeaponType.values();
+        RadioButton[] buttons = new RadioButton[types.length];
 
-        for (int i = 0; i < names.length; i++) {
-            buttons[i] = new RadioButton(names[i]);
+        VBox layout = new VBox(10);
+        layout.setAlignment(Pos.CENTER_LEFT);
+        layout.setPadding(new Insets(20));
+        layout.getChildren().add(title);
+
+        for (int i = 0; i < types.length; i++) {
+            buttons[i] = new RadioButton(types[i].getDisplayName());
             buttons[i].setToggleGroup(group);
-            final int id = i;
-            buttons[i].setOnAction(e -> selectedWeapon = id);
+            final WeaponType wt = types[i];
+            buttons[i].setOnAction(e -> selectedWeapon = wt);
+            layout.getChildren().add(buttons[i]);
         }
         buttons[0].setSelected(true);
 
         Button confirm = new Button("Start");
         confirm.setOnAction(e -> dialog.close());
+        layout.getChildren().add(confirm);
 
-        VBox layout = new VBox(10, title, buttons[0], buttons[1], buttons[2], confirm);
-        layout.setAlignment(Pos.CENTER_LEFT);
-        layout.setPadding(new Insets(20));
-
-        dialog.setScene(new Scene(layout, 200, 180));
+        dialog.setScene(new Scene(layout, 200, 200));
         dialog.setTitle("Weapon Select");
     }
 
-    public int showAndWait() {
+    public WeaponType showAndWait() {
         dialog.showAndWait();
         return selectedWeapon;
     }

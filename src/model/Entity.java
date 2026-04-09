@@ -3,13 +3,14 @@ package model;
 public abstract class Entity {
     protected double x;
     protected double y;
-    protected double movementSpeed = 220; // pps / pixlar per sekund
+    protected double movementSpeed = 220;
     protected double size = 50;
 
     protected int maxHealth = 100;
     protected int health = 100;
+    protected int contactDamage = 0;
     protected double damageCooldown = 0.0;
-    protected double DAMAGE_COOLDOWN_DURATION = 0.75;
+    protected static final double DAMAGE_COOLDOWN_DURATION = 0.75;
     protected boolean dead = false;
 
     public boolean isDead() {
@@ -17,8 +18,13 @@ public abstract class Entity {
     }
 
     public void takeDamage(int amount) {
-            health -= amount;
-            if (health <= 0) dead = true;
+        if (damageCooldown > 0) return;
+        health -= amount;
+        damageCooldown = DAMAGE_COOLDOWN_DURATION;
+        if (health <= 0) {
+            health = 0;
+            dead = true;
+        }
     }
 
     public void setHealth(int health) {
@@ -43,5 +49,21 @@ public abstract class Entity {
 
     public void setY(double y) {
         this.y = y;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public int getContactDamage() {
+        return contactDamage;
+    }
+
+    public double getDamageCooldown() {
+        return damageCooldown;
     }
 }
