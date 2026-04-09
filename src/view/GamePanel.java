@@ -13,10 +13,12 @@ import model.EnemyHandler;
 import model.Player;
 import model.Projectile;
 import model.ProjectileManager;
+import util.sounds.SoundManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class GamePanel {
     private final Stage stage;
@@ -27,21 +29,24 @@ public class GamePanel {
     private final ProjectileManager pm = new ProjectileManager(WIDTH, HEIGHT);
     private int projectileTexture = 0;
     private double spawnTimer = 0;
-    private static final double SPAWN_INTERVAL = 3.0; // seconds
+    private static final double SPAWN_INTERVAL = 3.0;
 
     private final Player player = new Player(WIDTH / 2.0, HEIGHT / 2.0);
     private final List<Projectile> projectiles = new ArrayList<>();
+    Random rand = new Random();
+    int type = rand.nextInt(2);
 
     private double mouseX = 0;
     private double mouseY = 0;
     private boolean shooting = false;
 
     private double shootCooldown = 0.2;
-    private static final double SHOOT_INTERVAL = 0.18;
+    private static final double SHOOT_INTERVAL = 0.02;
 
     public GamePanel(Stage stage, int initialWeapon) {
         this.stage = stage;
         this.projectileTexture = initialWeapon;
+        SoundManager.init();
 
         Canvas canvas = new Canvas(WIDTH, HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -94,7 +99,7 @@ public class GamePanel {
             if (e.getButton() == MouseButton.PRIMARY) shooting = !shooting;
         });
 
-        eh.spawnRandom(0);
+        eh.spawnRandom();
     }
 
     private void update(double delta) {
@@ -105,6 +110,7 @@ public class GamePanel {
         if (shooting && shootCooldown <= 0) {
             pm.addProjectile(player.getX(), player.getY(), 10, mouseX, mouseY, 1000, projectileTexture, 0);
             shootCooldown = SHOOT_INTERVAL;
+            SoundManager.playShoot();
         }
 
         pm.update(delta);
@@ -112,7 +118,7 @@ public class GamePanel {
         checkCollisions();
         spawnTimer += delta;
         if (spawnTimer >= SPAWN_INTERVAL) {
-            eh.spawnRandom(0);
+            eh.spawnRandom();
             spawnTimer = 0;
         }
     }
@@ -124,9 +130,22 @@ public class GamePanel {
             double pr = pm.getRadius(i);
 
             if (eh.checkHit(px, py, pr)) {
-                pm.deleteProjectile(i--); // remove projectile on hit
+                pm.deleteProjectile(i--);
             }
         }
+
+        if (eh.checkPlayerHit(player.getX(), player.getY(), player.getSize() / 2)) {
+            resetGame();
+        }
+    }
+
+    private void resetGame() {
+        player.reset(WIDTH / 2.0, HEIGHT / 2.0);
+        pm.clear();
+        eh.clear();
+        eh.spawnRandom();
+        shootCooldown = 0;
+        shooting = false;
     }
 
 
