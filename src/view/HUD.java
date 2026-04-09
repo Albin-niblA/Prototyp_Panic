@@ -52,9 +52,9 @@ public class HUD {
     private void drawWaveInfo(GraphicsContext gc, GameWorld world) {
         gc.setFill(Color.BLACK);
         gc.setFont(Font.font("Arial", 22));
-        gc.fillText("Vag: " + world.getWaveManager().getCurrentWave(),
+        gc.fillText("Wave: " + world.getWaveManager().getCurrentWave(),
                      screenWidth - 200, 35);
-        gc.fillText("Fiender: " + world.getEnemyHandler().getCount(),
+        gc.fillText("Enemies: " + world.getEnemyHandler().getCount(),
                      screenWidth - 200, 65);
     }
 }

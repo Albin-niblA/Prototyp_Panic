@@ -20,9 +20,9 @@ public class Weapon {
 
     public static Weapon fromType(WeaponType type) {
         return switch (type) {
-            case BULLET -> new Weapon("Bullet", 10, 0.02, 1000, 10, 0);
-            case ARROW  -> new Weapon("Arrow",  25, 0.15,  800,  8, 1);
-            case ROCKET -> new Weapon("Rocket", 50, 0.5,   500, 15, 2);
+            case BULLET -> new Weapon("Bullet", 10, 0.3, 1000, 10, 0);
+            case ARROW  -> new Weapon("Arrow",  25, 0.5,  800,  8, 1);
+            case ROCKET -> new Weapon("Rocket", 50, 1,   750, 15, 2);
         };
     }
 

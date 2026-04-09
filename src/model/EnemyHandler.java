@@ -25,7 +25,7 @@ public class EnemyHandler {
             double dist = Math.sqrt(dx * dx + dy * dy);
 
             if (dist < pr + e.getSize() / 2) {
-                e.takeDamage(damage);
+                e.takeProjectileDamage(damage);
                 if (e.isDead()) it.remove();
                 return true;
             }
