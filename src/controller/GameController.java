@@ -11,7 +11,7 @@ import model.Camera;
 import model.GameState;
 import model.GameWorld;
 import model.weapon.WeaponType;
-import util.sounds.SoundManager;
+import model.SoundManager;
 import view.GameRenderer;
 
 public class GameController {

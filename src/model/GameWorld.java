@@ -5,7 +5,7 @@ import javafx.scene.input.KeyCode;
 import model.wave.WaveManager;
 import model.weapon.Weapon;
 import model.weapon.WeaponType;
-import util.sounds.SoundManager;
+import model.SoundManager;
 
 public class GameWorld {
     public static final int WORLD_WIDTH = 3200;

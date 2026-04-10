@@ -1,4 +1,4 @@
-package util.sounds;
+package model;
 
 import javafx.scene.media.AudioClip;
 

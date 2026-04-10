@@ -5,11 +5,15 @@ public class Player extends Entity {
     private boolean moveDown;
     private boolean moveLeft;
     private boolean moveRight;
-    private int moveDir = 0; // 0=front, 1=back, 2=left, 3=right
+    private int moveDir = 0; // 0=front, 1=back, 2=left, 3=right, 4=frontLeft, 5=frontRight, 6=backLeft, 7=backRight
+
     private static final double BLINK_DISTANCE = 200.0;
     private static final double BLINK_COOLDOWN_DURATION = 3.0;
+    private static final double BLINK_VISIBLE_DELAY = 0.21;
+
     private double blinkCooldown = 0.0;
-    private boolean blinking;
+    private double blinkVisibleTimer = 0.0;
+    private boolean blinking = false;
     private boolean canBlink = true;
 
     public Player(double startX, double startY) {
@@ -31,22 +35,19 @@ public class Player extends Entity {
         double dx = 0;
         double dy = 0;
 
-        if (moveUp) {
-            dy -= 1;
-            moveDir = 1;
-        }
-        if (moveDown) {
-            dy += 1;
-            moveDir = 0;
-        }
-        if (moveLeft) {
-            dx -= 1;
-            moveDir = 2;
-        }
-        if (moveRight) {
-            dx += 1;
-            moveDir = 3;
-        }
+        if      ( moveDown && !moveLeft && !moveRight) moveDir = 0;
+        else if ( moveUp   && !moveLeft && !moveRight) moveDir = 1;
+        else if ( moveLeft && !moveUp   && !moveDown)  moveDir = 2;
+        else if ( moveRight&& !moveUp   && !moveDown)  moveDir = 3;
+        else if ( moveDown &&  moveLeft)               moveDir = 4;
+        else if ( moveDown)                            moveDir = 5;
+        else if ( moveUp   &&  moveLeft)               moveDir = 6;
+        else if ( moveUp)                              moveDir = 7;
+
+        if (moveUp)    dy -= 1;
+        if (moveDown)  dy += 1;
+        if (moveLeft)  dx -= 1;
+        if (moveRight) dx += 1;
 
         if (dx != 0 && dy != 0) {
             double factor = 1.0 / Math.sqrt(2);
@@ -60,13 +61,50 @@ public class Player extends Entity {
         x = Math.max(size / 2, Math.min(mapWidth - size / 2, x));
         y = Math.max(size / 2, Math.min(mapHeight - size / 2, y));
 
-        if (damageCooldown > 0) damageCooldown -= deltaTime;
-        if (blinkCooldown > 0) blinkCooldown -= deltaTime;
+        if (damageCooldown > 0)    damageCooldown -= deltaTime;
+        if (blinkCooldown > 0)     blinkCooldown -= deltaTime;
+        if (blinkVisibleTimer > 0) {
+            blinkVisibleTimer -= deltaTime;
+            if (blinkVisibleTimer <= 0) blinking = false;
+        }
     }
 
-    public int getMoveDir() {
-        return moveDir;
+    public boolean tryBlink(double mapWidth, double mapHeight) {
+        if (!canBlink || blinkCooldown > 0) return false;
+
+        double dx = 0, dy = 0;
+        switch (moveDir) {
+            case 0 -> { dy =  1; }
+            case 1 -> { dy = -1; }
+            case 2 -> { dx = -1; }
+            case 3 -> { dx =  1; }
+            case 4 -> { dx = -1; dy =  1; }
+            case 5 -> { dx =  1; dy =  1; }
+            case 6 -> { dx = -1; dy = -1; }
+            case 7 -> { dx =  1; dy = -1; }
+        }
+
+        if (dx != 0 && dy != 0) {
+            double factor = 1.0 / Math.sqrt(2);
+            dx *= factor;
+            dy *= factor;
+        }
+
+        x = Math.max(size / 2, Math.min(mapWidth  - size / 2, x + dx * BLINK_DISTANCE));
+        y = Math.max(size / 2, Math.min(mapHeight - size / 2, y + dy * BLINK_DISTANCE));
+
+        blinkCooldown = BLINK_COOLDOWN_DURATION;
+        blinking = true;
+        blinkVisibleTimer = BLINK_VISIBLE_DELAY;
+        return true;
     }
+
+    public int getMoveDir()                 { return moveDir; }
+    public double getBlinkCooldown()        { return blinkCooldown; }
+    public double getBlinkCooldownDuration(){ return BLINK_COOLDOWN_DURATION; }
+    public boolean isBlinking()             { return blinking; }
+    public void setCanBlink(boolean v)      { canBlink = v; }
+    public void setBlinking(boolean v)      { blinking = v; }
 
     public void reset(double startX, double startY) {
         x = startX;
@@ -76,48 +114,7 @@ public class Player extends Entity {
         dead = false;
         moveUp = moveDown = moveLeft = moveRight = false;
         blinkCooldown = 0;
-    }
-
-    public boolean tryBlink(double mapWidth, double mapHeight) {
-        if (!canBlink) return false;
-        if (blinkCooldown > 0) return false;
-
-        double dx = 0, dy = 0;
-        switch (moveDir) {
-            case 0 -> dy =  1;
-            case 1 -> dy = -1;
-            case 2 -> dx = -1;
-            case 3 -> dx =  1;
-        }
-
-        double factor = 1.0 / Math.sqrt(2);
-        dx *= factor;
-        dy *= factor;
-
-        x = Math.max(size / 2, Math.min(mapWidth  - size / 2, x + dx * BLINK_DISTANCE));
-        y = Math.max(size / 2, Math.min(mapHeight - size / 2, y + dy * BLINK_DISTANCE));
-
-        blinkCooldown = BLINK_COOLDOWN_DURATION;
-        return true;
-    }
-
-    public double getBlinkCooldown() {
-        return blinkCooldown;
-    }
-
-    public double getBlinkCooldownDuration() {
-        return BLINK_COOLDOWN_DURATION;
-    }
-
-    public void setCanBlink(boolean canBlink) {
-        this.canBlink = canBlink;
-    }
-
-    public boolean isBlinking() {
-        return blinking;
-    }
-
-    public void setBlinking(boolean blinking) {
-        this.blinking = blinking;
+        blinkVisibleTimer = 0;
+        blinking = false;
     }
 }
