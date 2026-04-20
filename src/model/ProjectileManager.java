@@ -17,6 +17,7 @@ public class ProjectileManager {
 
     private final double[] fuseTimer = new double[MAX_PROJECTILES];
     private final double[] deceleration = new double[MAX_PROJECTILES];
+    private final double[] explosionRadius = new double[MAX_PROJECTILES];
     private final boolean[] isGrenade = new boolean[MAX_PROJECTILES];
 
     public ProjectileManager(double worldWidth, double worldHeight) {
@@ -70,6 +71,7 @@ public class ProjectileManager {
         damage[index] = damage[last];
         fuseTimer[index] = fuseTimer[last];
         deceleration[index] = deceleration[last];
+        explosionRadius[index] = explosionRadius[last];
         isGrenade[index] = isGrenade[last];
         projectileCount--;
     }
@@ -100,6 +102,7 @@ public class ProjectileManager {
         damage[projectileCount] = dmg;
         fuseTimer[projectileCount] = 0;
         deceleration[projectileCount] = 0;
+        explosionRadius[projectileCount] = 0;
         isGrenade[projectileCount] = false;
         projectileCount++;
     }
@@ -107,7 +110,7 @@ public class ProjectileManager {
     public void addGrenade(double x, double y, double r,
                             double targetX, double targetY,
                             double speed, int projID, int effID, int dmg,
-                            double fuseTime) {
+                            double fuseTime, double explRadius) {
         if (projectileCount >= MAX_PROJECTILES) return;
 
         posX[projectileCount] = x;
@@ -118,19 +121,23 @@ public class ProjectileManager {
         double dy = targetY - y;
         double dist = Math.sqrt(dx * dx + dy * dy);
 
+        // Adjust speed so the grenade lands at the target position
+        double adjustedSpeed = (dist == 0) ? 0 : (2 * dist / fuseTime);
+
         if (dist == 0) {
-            velX[projectileCount] = speed;
+            velX[projectileCount] = 0;
             velY[projectileCount] = 0;
         } else {
-            velX[projectileCount] = (dx / dist) * speed;
-            velY[projectileCount] = (dy / dist) * speed;
+            velX[projectileCount] = (dx / dist) * adjustedSpeed;
+            velY[projectileCount] = (dy / dist) * adjustedSpeed;
         }
 
         projectileID[projectileCount] = projID;
         effectID[projectileCount] = effID;
         damage[projectileCount] = dmg;
         this.fuseTimer[projectileCount] = fuseTime;
-        this.deceleration[projectileCount] = speed / fuseTime;
+        this.deceleration[projectileCount] = adjustedSpeed / fuseTime;
+        this.explosionRadius[projectileCount] = explRadius;
         this.isGrenade[projectileCount] = true;
         projectileCount++;
     }
@@ -149,4 +156,5 @@ public class ProjectileManager {
     public int getDamage(int i) { return damage[i]; }
     public boolean isGrenade(int i) { return isGrenade[i]; }
     public double getFuseTimer(int i) { return fuseTimer[i]; }
+    public double getExplosionRadius(int i) { return explosionRadius[i]; }
 }

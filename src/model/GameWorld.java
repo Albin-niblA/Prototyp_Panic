@@ -59,28 +59,9 @@ public class GameWorld {
             double worldMouseX = input.getMouseX() + camera.getOffsetX();
             double worldMouseY = input.getMouseY() + camera.getOffsetY();
 
-            if (currentWeapon.isGrenade()) {
-                projectileManager.addGrenade(
+            currentWeapon.shoot(projectileManager,
                     player.getX(), player.getY(),
-                    currentWeapon.getProjectileRadius(),
-                    worldMouseX, worldMouseY,
-                    currentWeapon.getProjectileSpeed(),
-                    currentWeapon.getTextureId(),
-                    0,
-                    currentWeapon.getDamage(),
-                    currentWeapon.getFuseTime()
-                );
-            } else {
-                projectileManager.addProjectile(
-                    player.getX(), player.getY(),
-                    currentWeapon.getProjectileRadius(),
-                    worldMouseX, worldMouseY,
-                    currentWeapon.getProjectileSpeed(),
-                    currentWeapon.getTextureId(),
-                    0,
-                    currentWeapon.getDamage()
-                );
-            }
+                    worldMouseX, worldMouseY);
             shootCooldown = currentWeapon.getFireInterval();
             SoundManager.playShoot();
         }
@@ -100,7 +81,7 @@ public class GameWorld {
                 double px = projectileManager.getX(i);
                 double py = projectileManager.getY(i);
                 int dmg = projectileManager.getDamage(i);
-                enemyHandler.applyAoeDamage(px, py, currentWeapon.getExplosionRadius(), dmg);
+                enemyHandler.applyAoeDamage(px, py, projectileManager.getExplosionRadius(i), dmg);
                 projectileManager.deleteProjectile(i--);
             }
         }
