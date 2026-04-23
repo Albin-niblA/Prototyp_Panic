@@ -7,9 +7,11 @@ import model.weapon.WeaponType;
 import view.ButtonType;
 import view.GameListener;
 import view.MainMenu;
+import view.SettingsListener;
+import view.SettingsMenu;
 import view.WeaponSelectDialog;
 
-public class Main extends Application implements GameListener {
+public class Main extends Application implements GameListener, SettingsListener {
 
     private Stage stage;
     private static final int WIDTH = 1600;
@@ -35,9 +37,25 @@ public class Main extends Application implements GameListener {
                 gc.setOnReturnToMenu(this::showMainMenu);
                 gc.start();
             }
+            case SETTINGS -> new SettingsMenu(stage, this, this::showMainMenu, WIDTH, HEIGHT).show();
             case EXIT -> Platform.exit();
             default -> { }
         }
+    }
+
+    @Override
+    public void onWasdSelected() {
+        ControlSettings.setScheme(ControlScheme.WASD);
+    }
+
+    @Override
+    public void onArrowKeysSelected() {
+        ControlSettings.setScheme(ControlScheme.ARROW_KEYS);
+    }
+
+    @Override
+    public boolean isWasdActive() {
+        return ControlSettings.getScheme() == ControlScheme.WASD;
     }
 
     public static void main(String[] args) {

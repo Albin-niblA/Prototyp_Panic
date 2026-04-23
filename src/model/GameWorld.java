@@ -38,10 +38,10 @@ public class GameWorld {
 
         // Player movement
         player.setMoving(
-            input.isHeld(KeyCode.W),
-            input.isHeld(KeyCode.S),
-            input.isHeld(KeyCode.A),
-            input.isHeld(KeyCode.D)
+            input.isMovingUp(),
+            input.isMovingDown(),
+            input.isMovingLeft(),
+            input.isMovingRight()
         );
 
         // Blink

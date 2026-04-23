@@ -35,13 +35,13 @@ public class PauseOverlay {
         gc.setTextAlign(TextAlignment.CENTER);
 
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", 64));
-        gc.fillText("PAUSAD", width / 2.0, height / 2.0 - 20);
+        gc.setFont(Font.font("Times New Roman", 64));
+        gc.fillText("PAUSED", width / 2.0, height / 2.0 - 20);
 
         gc.setFill(Color.LIGHTGRAY);
         gc.setFont(Font.font("Arial", 22));
-        gc.fillText("Tryck ESC för att fortsätta", width / 2.0, height / 2.0 + 30);
-        gc.fillText("Tryck M för huvudmenyn", width / 2.0, height / 2.0 + 65);
+        gc.fillText("Press ESC to continue", width / 2.0, height / 2.0 + 30);
+        gc.fillText("Press M to go back to main menu", width / 2.0, height / 2.0 + 65);
     }
 
     private void drawGameOver(GraphicsContext gc) {
@@ -49,13 +49,13 @@ public class PauseOverlay {
         gc.setTextAlign(TextAlignment.CENTER);
 
         gc.setFill(Color.web("#FF4444"));
-        gc.setFont(Font.font("Arial", 72));
-        gc.fillText("DU FÖRLORADE", width / 2.0, height / 2.0 - 30);
+        gc.setFont(Font.font("Times New Roman", 72));
+        gc.fillText("YOU LOST!", width / 2.0, height / 2.0 - 30);
 
         gc.setFill(Color.LIGHTGRAY);
         gc.setFont(Font.font("Arial", 22));
-        gc.fillText("Tryck R för att spela igen", width / 2.0, height / 2.0 + 30);
-        gc.fillText("Tryck M för huvudmenyn", width / 2.0, height / 2.0 + 65);
+        gc.fillText("Press R to play again", width / 2.0, height / 2.0 + 30);
+        gc.fillText("Press M to go back to main menu", width / 2.0, height / 2.0 + 65);
     }
 
     private void dimBackground(GraphicsContext gc, double opacity) {

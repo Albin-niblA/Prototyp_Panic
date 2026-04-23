@@ -45,6 +45,26 @@ public class InputHandler {
         return heldKeys.contains(key);
     }
 
+    public boolean isMovingUp() {
+        return ControlSettings.getScheme() == ControlScheme.WASD
+                ? isHeld(KeyCode.W) : isHeld(KeyCode.UP);
+    }
+
+    public boolean isMovingDown() {
+        return ControlSettings.getScheme() == ControlScheme.WASD
+                ? isHeld(KeyCode.S) : isHeld(KeyCode.DOWN);
+    }
+
+    public boolean isMovingLeft() {
+        return ControlSettings.getScheme() == ControlScheme.WASD
+                ? isHeld(KeyCode.A) : isHeld(KeyCode.LEFT);
+    }
+
+    public boolean isMovingRight() {
+        return ControlSettings.getScheme() == ControlScheme.WASD
+                ? isHeld(KeyCode.D) : isHeld(KeyCode.RIGHT);
+    }
+
     public boolean wasPressed(KeyCode key) {
         return justPressed.contains(key);
     }
