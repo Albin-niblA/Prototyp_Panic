@@ -51,7 +51,6 @@ public class GameRenderer {
         // Player
         Player p = world.getPlayer();
         int moveDir = p.getMoveDir();
-        if (moveDir > 5) moveDir = 1;
         Image pTex = textures.getPlayerTexture(moveDir);
         double ps = p.getSize();
         if (!p.isBlinking()) {
