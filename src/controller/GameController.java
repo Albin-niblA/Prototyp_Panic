@@ -14,6 +14,8 @@ import model.weapon.WeaponType;
 import model.managers.SoundManager;
 import view.GameRenderer;
 
+import java.util.List;
+
 public class GameController {
     private final Stage stage;
     private final int viewportWidth;
@@ -99,6 +101,10 @@ public class GameController {
 
         if (input.wasMouseClicked()) {
             world.toggleShooting();
+            if (world.getState() == GameState.UPGRADE) {
+                world.applyCardUpgrade(renderer.getOverlay().getClickedCard(input.getMouseX(), input.getMouseY()));
+                world.resume();
+            }
         }
     }
 

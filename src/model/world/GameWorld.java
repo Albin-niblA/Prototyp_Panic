@@ -1,6 +1,7 @@
 package model.world;
 
 import controller.InputHandler;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
 import model.upgrades.UpgradeManager;
 import model.upgrades.Upgrades;
@@ -14,6 +15,8 @@ import model.wave.WaveManager;
 import model.weapon.Upgrade;
 import model.weapon.Weapon;
 import model.weapon.WeaponType;
+
+import java.awt.*;
 
 public class GameWorld {
     public static final int WORLD_WIDTH = 3200;
@@ -62,19 +65,6 @@ public class GameWorld {
             }
         }
         player.update(delta, WORLD_WIDTH, WORLD_HEIGHT);
-
-        // test for upgrades on f keys
-        if (input.wasPressed(KeyCode.F1)) {
-            player.levelUpgrade(Upgrades.Multishot);
-        }
-        if (input.wasPressed(KeyCode.F2)) {
-            player.levelUpgrade(Upgrades.Nimble);
-            player.setMovementSpeed(player.getMovementSpeed() + 10);
-        }
-        if (input.wasPressed(KeyCode.F3)) {
-            player.levelUpgrade(Upgrades.Blink);
-            player.setBLINK_DISTANCE(player.getBLINK_DISTANCE() + 20);
-        }
 
         // Shooting
         shootCooldown -= delta;
@@ -186,6 +176,13 @@ public class GameWorld {
         state = GameState.UPGRADE;
         shooting = false;
         player.setMoving(false, false, false, false);
+    }
+
+    public void applyCardUpgrade(Upgrades u) {
+        if (u != null) {
+            player.levelUpgrade(u);
+            state = GameState.RUNNING;
+        }
     }
 
     public GameState getState() { return state; }

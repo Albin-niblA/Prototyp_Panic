@@ -1,5 +1,6 @@
 package view;
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -14,6 +15,7 @@ import model.upgrades.Upgrades;
 import model.world.GameState;
 import util.images.TextureAtlas;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,10 +25,11 @@ import java.util.List;
  * Lägg till nya case här när fler tillstånd behöver en skärm (t.ex. UPGRADE).
  */
 public class OverlayHandler {
-    UpgradeManager upgradeManager;
-    List<Upgrades> upgrades;
-    TextureAtlas textures;
+    private UpgradeManager upgradeManager;
+    private List<Upgrades> upgrades;
+    private TextureAtlas textures;
     private boolean drawnUpgrade = false;
+    CardBounds cardBounds;
 
     private final int width;
     private final int height;
@@ -88,16 +91,35 @@ public class OverlayHandler {
 
         int cardWidth = width / 4;
         int cardHeight = height / 2;
-        int spacing = width / 8;
-        int totalWidth = 3*cardWidth + 2*spacing;
+        int spacing = width / 12;
+        int totalWidth = 3*cardWidth + 2*spacing ;
         int startX = (width - totalWidth) / 2;
         int cardY = height / 3;
+        cardBounds = new CardBounds(cardWidth, cardHeight, spacing, totalWidth, startX, cardY);
 
         for (int i = 0; i < upgrades.size(); i++) {
             int x = startX + i * (cardWidth + spacing);
             drawCard(gc, upgrades.get(i), x, cardY, cardWidth, cardHeight);
         }
         drawnUpgrade = true;
+    }
+
+    private class CardBounds {
+        int cardWidth;
+        int cardHeight;
+        int spacing;
+        int totalWidth;
+        int startX;
+        int cardY;
+
+        public CardBounds(int cardWidth, int cardHeight, int spacing, int totalWidth, int startX, int cardY) {
+            this.cardWidth = cardWidth;
+            this.cardHeight = cardHeight;
+            this.spacing = spacing;
+            this.totalWidth = totalWidth;
+            this.startX = startX;
+            this.cardY = cardY;
+        }
     }
 
     private void drawCard(GraphicsContext gc, Upgrades upgrade, int x, int y, int width, int height) {
@@ -111,7 +133,7 @@ public class OverlayHandler {
         // Rounded rectangles and stroke
         gc.fillRoundRect(x, y, width, height, 32, 32);
         gc.setStroke(Color.BLACK);
-        gc.setLineWidth(2);
+        gc.setLineWidth(5);
         gc.strokeRoundRect(x, y, width, height, 32, 32);
 
         // Icon
@@ -124,6 +146,10 @@ public class OverlayHandler {
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 40));
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText(upgrade.name(), x + width / 2, y + 60);
+
+        gc.setFill(Color.BLACK);
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+        gc.fillText(upgrade.getRarity().name(), x + width / 2, y + 80);
 
         // Description
         gc.setFill(Color.BLACK);
@@ -141,5 +167,22 @@ public class OverlayHandler {
     private void dimBackground(GraphicsContext gc, double opacity) {
         gc.setFill(Color.color(0, 0, 0, opacity));
         gc.fillRect(0, 0, width, height);
+    }
+
+
+    // Returns the card if the mouse has been clicked on one
+    public Upgrades getClickedCard(double mouseX, double mouseY) {
+        List<Rectangle2D> cards = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            int x = cardBounds.startX + i * (cardBounds.cardWidth + cardBounds.spacing);
+            cards.add(new Rectangle2D(x, cardBounds.cardY, cardBounds.cardWidth, cardBounds.cardHeight));
+        }
+        for (int i = 0; i < 3; i++) {
+            if (cards.get(i).contains(mouseX, mouseY)) {
+                drawnUpgrade = false;
+                return upgrades.get(i);
+            }
+        }
+        return null;
     }
 }

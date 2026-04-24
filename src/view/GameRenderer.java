@@ -151,4 +151,8 @@ public class GameRenderer {
                     size, size);
         }
     }
+
+    public OverlayHandler getOverlay() {
+        return overlay;
+    }
 }
