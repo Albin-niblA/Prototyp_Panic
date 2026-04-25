@@ -152,18 +152,22 @@ public class OverlayHandler {
         light.setX(mouseX - x);
         light.setY(mouseY - y);
         light.setZ(500); // Height of the light
-        light.setColor(Color.web(upgrade.getRarity().getGradientStart()));
+        light.setColor(Color.web(upgrade.getRarity().getLightColor()));
 
         Lighting lighting = new Lighting(light);
         lighting.setSurfaceScale(5.0); // How much depth
+        lighting.setDiffuseConstant(1.5); // How strong the pointlight is
 
         gc.setEffect(lighting);
+        gc.setGlobalAlpha(0.5);
         gc.fillRoundRect(x, y, width, height, strokeSize, strokeSize);
-        gc.setEffect(null);
+        gc.setGlobalAlpha(1.0);
 
-        gc.setStroke(Color.BLACK);
+        if (hovered) gc.setStroke(Color.WHITE);
+        else gc.setStroke(Color.BLACK);
         gc.setLineWidth(5);
         gc.strokeRoundRect(x, y, width, height, strokeSize, strokeSize);
+        gc.setEffect(null);
 
         // Icon
         Image icon = textures.getUpgradeIcon(upgrade.getId());
@@ -171,21 +175,27 @@ public class OverlayHandler {
         gc.drawImage(icon, x + (double) (width - iconSize) / 2, y + (100 * resolutionScale), iconSize, iconSize);
 
         // Cardname
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 40 * resolutionScale));
+        gc.setFont(Font.font("Montserrat Black", FontWeight.BOLD, 40 * resolutionScale));
         gc.setTextAlign(TextAlignment.CENTER);
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(8 * resolutionScale);
+        gc.strokeText(upgrade.name(), x + width / 2, y + (60 * resolutionScale));
+        if (hovered) gc.setFill(Color.web(upgrade.getRarity().getLightColor()));
+        else gc.setFill(Color.WHITE);
         gc.fillText(upgrade.name(), x + width / 2, y + (60 * resolutionScale));
 
         gc.setFill(Color.BLACK);
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 20 * resolutionScale));
-        gc.fillText(upgrade.getRarity().name(), x + width / 2, y + (80 * resolutionScale));
+        gc.fillText(upgrade.getRarity().name(), x + width / 2, y + (90 * resolutionScale));
 
         // Description
-        gc.setFill(Color.BLACK);
-        gc.setFont(Font.font("Times New Roman", 20 * resolutionScale));
-        String[] lines = upgrade.getDescription().split("\n");
-        for (int i = 0; i < lines.length; i++) {
-            gc.fillText(lines[i], x + (double) width / 2, y + (250 * resolutionScale) + i * (30 * resolutionScale));
+        if (hovered) {
+            gc.setFill(Color.BLACK);
+            gc.setFont(Font.font("Times New Roman", 20 * resolutionScale));
+            String[] lines = upgrade.getDescription().split("\n");
+            for (int i = 0; i < lines.length; i++) {
+                gc.fillText(lines[i], x + (double) width / 2, y + (250 * resolutionScale) + i * (30 * resolutionScale));
+            }
         }
     }
 
