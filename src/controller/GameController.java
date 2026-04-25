@@ -20,6 +20,7 @@ public class GameController {
     private final Stage stage;
     private final int viewportWidth;
     private final int viewportHeight;
+    private final double resolutionScale;
 
     private final GameWorld world;
     private final InputHandler input;
@@ -31,17 +32,18 @@ public class GameController {
     private long lastTime = -1;
     private Runnable onReturnToMenu;
 
-    public GameController(Stage stage, int width, int height, WeaponType weaponType) {
+    public GameController(Stage stage, int width, int height, double resolutionScale, WeaponType weaponType) {
         this.stage = stage;
         this.viewportWidth = width;
         this.viewportHeight = height;
+        this.resolutionScale = resolutionScale;
 
         SoundManager.init();
 
         this.camera = new Camera(width, height);
         this.world = new GameWorld(weaponType);
         this.input = new InputHandler();
-        this.renderer = new GameRenderer(width, height, camera, world.getUpgradeManager());
+        this.renderer = new GameRenderer(width, height, resolutionScale, camera, world.getUpgradeManager());
 
         Canvas canvas = new Canvas(width, height);
         this.gc = canvas.getGraphicsContext2D();

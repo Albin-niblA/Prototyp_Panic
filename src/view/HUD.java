@@ -9,10 +9,12 @@ import model.entities.Player;
 public class HUD {
     private final int screenWidth;
     private final int screenHeight;
+    private final double resolutionScale;
 
-    public HUD(int screenWidth, int screenHeight) {
+    public HUD(int screenWidth, int screenHeight, double resolutionScale) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
+        this.resolutionScale = resolutionScale;
     }
 
     public void draw(GraphicsContext gc, GameWorld world) {
@@ -21,10 +23,10 @@ public class HUD {
     }
 
     private void drawHealthBar(GraphicsContext gc, Player p) {
-        double barWidth = 300;
-        double barHeight = 25;
-        double barX = 20;
-        double barY = screenHeight - 45;
+        double barWidth = (double) screenWidth / 5;
+        double barHeight = (double) screenHeight / 30;
+        double barX = (double) screenWidth / 70;
+        double barY = screenHeight - (double) screenHeight / 20;
 
         double healthPct = (double) p.getHealth() / p.getMaxHealth();
 

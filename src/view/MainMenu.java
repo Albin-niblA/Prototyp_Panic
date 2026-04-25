@@ -12,20 +12,20 @@ public class MainMenu {
     private final Stage stage;
     private final Scene scene;
 
-    public MainMenu(Stage stage, GameListener listener, int width, int height) {
+    public MainMenu(Stage stage, GameListener listener, int width, int height, double resolutionScale) {
         this.stage = stage;
 
         Text title = new Text("Prototype Panic");
-        title.setFont(new Font(40));
+        title.setFont(new Font(40 * resolutionScale));
 
-        VBox layout = new VBox(20);
+        VBox layout = new VBox(20 * resolutionScale);
         layout.setAlignment(Pos.CENTER);
         layout.getChildren().add(title);
 
         for (ButtonType type : ButtonType.values()) {
             Button btn = new Button(type.getLabel());
-            btn.setPrefWidth(200);
-            btn.setPrefHeight(50);
+            btn.setPrefWidth(200 * resolutionScale);
+            btn.setPrefHeight(50 * resolutionScale);
             btn.setOnAction(e -> listener.onButtonClicked(type));
             layout.getChildren().add(btn);
         }

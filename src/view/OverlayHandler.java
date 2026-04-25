@@ -33,10 +33,12 @@ public class OverlayHandler {
 
     private final int width;
     private final int height;
+    private double resolutionScale;
 
-    public OverlayHandler(int width, int height, UpgradeManager upgradeManager, TextureAtlas textures) {
+    public OverlayHandler(int width, int height, double resolutionScale, UpgradeManager upgradeManager, TextureAtlas textures) {
         this.width = width;
         this.height = height;
+        this.resolutionScale = resolutionScale;
         this.upgradeManager = upgradeManager;
         this.textures = textures;
     }
@@ -55,13 +57,13 @@ public class OverlayHandler {
         gc.setTextAlign(TextAlignment.CENTER);
 
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Times New Roman", 64));
-        gc.fillText("PAUSED", width / 2.0, height / 2.0 - 20);
+        gc.setFont(Font.font("Times New Roman", 64 * resolutionScale));
+        gc.fillText("PAUSED", width / 2.0, height / 2.0 - (20 * resolutionScale));
 
         gc.setFill(Color.LIGHTGRAY);
-        gc.setFont(Font.font("Arial", 22));
-        gc.fillText("Press ESC to continue", width / 2.0, height / 2.0 + 30);
-        gc.fillText("Press M to go back to main menu", width / 2.0, height / 2.0 + 65);
+        gc.setFont(Font.font("Arial", 22 * resolutionScale));
+        gc.fillText("Press ESC to continue", width / 2.0, height / 2.0 + (30 * resolutionScale));
+        gc.fillText("Press M to go back to main menu", width / 2.0, height / 2.0 + (65 * resolutionScale));
     }
 
     private void drawGameOver(GraphicsContext gc) {
@@ -69,13 +71,13 @@ public class OverlayHandler {
         gc.setTextAlign(TextAlignment.CENTER);
 
         gc.setFill(Color.web("#FF4444"));
-        gc.setFont(Font.font("Times New Roman", 72));
-        gc.fillText("YOU LOST!", width / 2.0, height / 2.0 - 30);
+        gc.setFont(Font.font("Times New Roman", 72 * resolutionScale));
+        gc.fillText("YOU LOST!", width / 2.0, height / 2.0 - (30 * resolutionScale));
 
         gc.setFill(Color.LIGHTGRAY);
-        gc.setFont(Font.font("Arial", 22));
-        gc.fillText("Press R to play again", width / 2.0, height / 2.0 + 30);
-        gc.fillText("Press M to go back to main menu", width / 2.0, height / 2.0 + 65);
+        gc.setFont(Font.font("Arial", 22 * resolutionScale));
+        gc.fillText("Press R to play again", width / 2.0, height / 2.0 + (30 * resolutionScale));
+        gc.fillText("Press M to go back to main menu", width / 2.0, height / 2.0 + (65 * resolutionScale));
     }
 
     public void drawUpgrade(GraphicsContext gc) {
@@ -86,13 +88,13 @@ public class OverlayHandler {
         dimBackground(gc, 0.65);
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Times New Roman", 72));
+        gc.setFont(Font.font("Times New Roman", 72 * resolutionScale));
         gc.fillText("Choose an upgrade", width / 2.0, height / 5.0);
 
         int cardWidth = width / 4;
         int cardHeight = height / 2;
         int spacing = width / 12;
-        int totalWidth = 3*cardWidth + 2*spacing ;
+        int totalWidth = 3*cardWidth + 2*spacing;
         int startX = (width - totalWidth) / 2;
         int cardY = height / 3;
         cardBounds = new CardBounds(cardWidth, cardHeight, spacing, totalWidth, startX, cardY);
@@ -131,32 +133,33 @@ public class OverlayHandler {
         gc.setFill(background);
 
         // Rounded rectangles and stroke
-        gc.fillRoundRect(x, y, width, height, 32, 32);
+        double strokeSize = 32*resolutionScale;
+        gc.fillRoundRect(x, y, width, height, strokeSize, strokeSize);
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(5);
-        gc.strokeRoundRect(x, y, width, height, 32, 32);
+        gc.strokeRoundRect(x, y, width, height, strokeSize, strokeSize);
 
         // Icon
         Image icon = textures.getUpgradeIcon(upgrade.getId());
-        int iconSize = 128;
-        gc.drawImage(icon, x + (width - iconSize) / 2, y + 100, iconSize, iconSize);
+        int iconSize = (int) (128 * resolutionScale);
+        gc.drawImage(icon, x + (double) (width - iconSize) / 2, y + (100 * resolutionScale), iconSize, iconSize);
 
         // Cardname
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 40));
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 40 * resolutionScale));
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText(upgrade.name(), x + width / 2, y + 60);
+        gc.fillText(upgrade.name(), x + width / 2, y + (60 * resolutionScale));
 
         gc.setFill(Color.BLACK);
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        gc.fillText(upgrade.getRarity().name(), x + width / 2, y + 80);
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 20 * resolutionScale));
+        gc.fillText(upgrade.getRarity().name(), x + width / 2, y + (80 * resolutionScale));
 
         // Description
         gc.setFill(Color.BLACK);
-        gc.setFont(Font.font("Times New Roman", 20));
+        gc.setFont(Font.font("Times New Roman", 20 * resolutionScale));
         String[] lines = upgrade.getDescription().split("\n");
         for (int i = 0; i < lines.length; i++) {
-            gc.fillText(lines[i], x + width / 2, y + 250 + i * 30);
+            gc.fillText(lines[i], x + (double) width / 2, y + (250 * resolutionScale) + i * (30 * resolutionScale));
         }
     }
 

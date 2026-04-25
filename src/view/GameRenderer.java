@@ -16,20 +16,23 @@ import util.images.TextureAtlas;
 public class GameRenderer {
     private final int viewportWidth;
     private final int viewportHeight;
+    private final double resolutionScale;
     private final Camera camera;
     private final TextureAtlas textures;
     private final HUD hud;
     private final OverlayHandler overlay;
 
-    private static final int GRID_SIZE = 60;
+    private final int GRID_SIZE;
 
-    public GameRenderer(int viewportWidth, int viewportHeight, Camera camera, UpgradeManager upgradeManager) {
+    public GameRenderer(int viewportWidth, int viewportHeight, double resolutionScale, Camera camera, UpgradeManager upgradeManager) {
         this.viewportWidth = viewportWidth;
         this.viewportHeight = viewportHeight;
+        this.resolutionScale = resolutionScale;
+        GRID_SIZE = (int) (60 * resolutionScale);
         this.camera = camera;
         this.textures = new TextureAtlas();
-        this.hud = new HUD(viewportWidth, viewportHeight);
-        this.overlay = new OverlayHandler(viewportWidth, viewportHeight, upgradeManager, textures);
+        this.hud = new HUD(viewportWidth, viewportHeight, resolutionScale);
+        this.overlay = new OverlayHandler(viewportWidth, viewportHeight, resolutionScale, upgradeManager, textures);
     }
 
     public void render(GraphicsContext gc, GameWorld world) {
@@ -58,7 +61,7 @@ public class GameRenderer {
         // Player
         Player p = world.getPlayer();
         Image pTex = textures.getPlayerTexture(p.getMoveDir());
-        double ps = p.getSize();
+        double ps = p.getSize() * resolutionScale;
         if (!p.isBlinking()) {
             gc.drawImage(pTex, p.getX() - ps / 2 - ox, p.getY() - ps / 2 - oy, ps, ps);
         }
@@ -67,7 +70,7 @@ public class GameRenderer {
         for (Enemy e : world.getEnemyHandler().getEnemies()) {
             if (!camera.isVisible(e.getX(), e.getY(), e.getSize())) continue;
             Image eTex = textures.getEnemyTexture(e.getTextureID());
-            double es = e.getSize();
+            double es = e.getSize() * resolutionScale;
             gc.drawImage(eTex, e.getX() - es / 2 - ox, e.getY() - es / 2 - oy, es, es);
         }
 
@@ -91,7 +94,7 @@ public class GameRenderer {
             if (px < -200 || px > viewportWidth + 200 ||
                 py < -200 || py > viewportHeight + 200) continue;
 
-            double r = pm.getRadius(i);
+            double r = pm.getRadius(i) * resolutionScale;
             int texID = pm.getTextureID(i);
             Image tex = textures.getProjectileTexture(texID);
 
@@ -108,7 +111,7 @@ public class GameRenderer {
                     double alpha = 0.15 + 0.25 * (1.0 - fuseRemaining);
                     gc.setStroke(Color.rgb(255, 60, 30, alpha));
                     gc.setLineWidth(2);
-                    double explosionR = 150;
+                    double explosionR = 150 * resolutionScale;
                     gc.strokeOval(px - explosionR, py - explosionR,
                         explosionR * 2, explosionR * 2);
                 }
@@ -144,7 +147,7 @@ public class GameRenderer {
             int sx = (frame % cols) * frameWidth;
             int sy = (frame / cols) * frameHeight;
 
-            int size = em.getEffectSize(em.getEffectID(i));
+            int size = (int) (em.getEffectSize(em.getEffectID(i)) * resolutionScale);
             gc.drawImage(sheet,
                     sx, sy, frameWidth, frameHeight,
                     x - size / 2.0, y - size / 2.0,

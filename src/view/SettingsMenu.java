@@ -24,16 +24,18 @@ public class SettingsMenu {
     private final VBox wasdBox;
     private final VBox arrowBox;
     private final SettingsListener listener;
+    private double resolutionScale;
 
-    public SettingsMenu(Stage stage, SettingsListener listener, Runnable onBack, int width, int height) {
+    public SettingsMenu(Stage stage, SettingsListener listener, Runnable onBack, int width, int height, double resolutionScale) {
         this.stage = stage;
         this.listener = listener;
+        this.resolutionScale = resolutionScale;
 
         Text title = new Text("Settings");
-        title.setFont(new Font(40));
+        title.setFont(new Font(40 * resolutionScale));
 
         Text subtitle = new Text("Select control scheme");
-        subtitle.setFont(new Font(18));
+        subtitle.setFont(new Font(18 * resolutionScale));
 
         wasdBox = createImageBox("WASD", "/util/images/assets/WASD_Keys.png");
         arrowBox = createImageBox("Arrow keys", "/util/images/assets/Arrow_Keys.png");
@@ -48,15 +50,15 @@ public class SettingsMenu {
         });
         updateHighlight();
 
-        HBox controlsRow = new HBox(60, wasdBox, arrowBox);
+        HBox controlsRow = new HBox(60 * resolutionScale, wasdBox, arrowBox);
         controlsRow.setAlignment(Pos.CENTER);
 
         Button backButton = new Button("Back to main menu");
-        backButton.setPrefWidth(250);
-        backButton.setPrefHeight(50);
+        backButton.setPrefWidth(250 * resolutionScale);
+        backButton.setPrefHeight(50 * resolutionScale);
         backButton.setOnAction(e -> onBack.run());
 
-        VBox layout = new VBox(25);
+        VBox layout = new VBox(25 * resolutionScale);
         layout.setAlignment(Pos.CENTER);
         layout.getChildren().addAll(title, subtitle, controlsRow, backButton);
 
@@ -64,19 +66,19 @@ public class SettingsMenu {
     }
 
     private VBox createImageBox(String label, String imagePath) {
-        Image img = new Image(getClass().getResourceAsStream(imagePath), 200, 200, true, false);
+        Image img = new Image(getClass().getResourceAsStream(imagePath), 200*resolutionScale, 200*resolutionScale, true, false);
         ImageView imageView = new ImageView(img);
-        imageView.setFitWidth(200);
-        imageView.setFitHeight(200);
+        imageView.setFitWidth(200*resolutionScale);
+        imageView.setFitHeight(200*resolutionScale);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(false);
 
         Text labelText = new Text(label);
-        labelText.setFont(new Font(20));
+        labelText.setFont(new Font(20 * resolutionScale));
 
-        VBox box = new VBox(12, imageView, labelText);
+        VBox box = new VBox(12 * resolutionScale, imageView, labelText);
         box.setAlignment(Pos.CENTER);
-        box.setPadding(new Insets(16));
+        box.setPadding(new Insets(16 * resolutionScale));
         box.setStyle(INACTIVE_STYLE);
         return box;
     }

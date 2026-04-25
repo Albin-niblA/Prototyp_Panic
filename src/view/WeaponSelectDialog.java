@@ -17,7 +17,7 @@ public class WeaponSelectDialog {
     private final Stage dialog;
     private WeaponType selectedWeapon = WeaponType.BULLET;
 
-    public WeaponSelectDialog(Stage owner) {
+    public WeaponSelectDialog(Stage owner, double resolutionScale) {
         dialog = new Stage();
         dialog.initOwner(owner);
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -28,9 +28,9 @@ public class WeaponSelectDialog {
         WeaponType[] types = WeaponType.values();
         RadioButton[] buttons = new RadioButton[types.length];
 
-        VBox layout = new VBox(10);
+        VBox layout = new VBox(10 * resolutionScale);
         layout.setAlignment(Pos.CENTER_LEFT);
-        layout.setPadding(new Insets(20));
+        layout.setPadding(new Insets(20 * resolutionScale));
         layout.getChildren().add(title);
 
         for (int i = 0; i < types.length; i++) {
@@ -46,7 +46,7 @@ public class WeaponSelectDialog {
         confirm.setOnAction(e -> dialog.close());
         layout.getChildren().add(confirm);
 
-        dialog.setScene(new Scene(layout, 200, 200));
+        dialog.setScene(new Scene(layout, 200 * resolutionScale, 200 * resolutionScale));
         dialog.setTitle("Weapon Select");
     }
 
