@@ -22,7 +22,7 @@ public class Main extends Application implements GameListener, SettingsListener 
     private static int HEIGHT;
     private static final int BASE_WIDTH = 1920;
     private static final int BASE_HEIGHT = 1080;
-    private static final int BASE_DPI = 96;
+    //private static final int BASE_DPI = 96;
     private static double resolutionScale;
 
     @Override
@@ -36,10 +36,12 @@ public class Main extends Application implements GameListener, SettingsListener 
         Rectangle2D screenBounds = Screen.getPrimary().getBounds();
         WIDTH = (int) screenBounds.getWidth();
         HEIGHT = (int) screenBounds.getHeight();
-        int dpi = (int) Screen.getPrimary().getDpi();
-        resolutionScale = Math.min((double) WIDTH / BASE_WIDTH, (double) HEIGHT / BASE_HEIGHT)
-        * ((double) dpi / BASE_DPI);
-        System.out.println(resolutionScale);
+        // DPI compensation gave weird results, skip it
+        //int dpi = (int) Screen.getPrimary().getDpi();
+        resolutionScale = Math.min((double) WIDTH / BASE_WIDTH, (double) HEIGHT / BASE_HEIGHT);
+        System.out.println("Screen width " + WIDTH + " vs base " + BASE_WIDTH);
+        System.out.println("Screen height " + HEIGHT + " vs base " + BASE_HEIGHT);
+        System.out.println("Scale: " + resolutionScale);
         stage.setFullScreen(true);
     }
 
