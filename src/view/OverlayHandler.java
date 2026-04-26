@@ -159,7 +159,7 @@ public class OverlayHandler {
         lighting.setDiffuseConstant(1.5); // How strong the pointlight is
 
         gc.setEffect(lighting);
-        gc.setGlobalAlpha(0.5);
+        gc.setGlobalAlpha(0.65);
         gc.fillRoundRect(x, y, width, height, strokeSize, strokeSize);
         gc.setGlobalAlpha(1.0);
 
@@ -189,13 +189,11 @@ public class OverlayHandler {
         gc.fillText(upgrade.getRarity().name(), x + width / 2, y + (90 * resolutionScale));
 
         // Description
-        if (hovered) {
-            gc.setFill(Color.BLACK);
-            gc.setFont(Font.font("Times New Roman", 20 * resolutionScale));
-            String[] lines = upgrade.getDescription().split("\n");
-            for (int i = 0; i < lines.length; i++) {
-                gc.fillText(lines[i], x + (double) width / 2, y + (250 * resolutionScale) + i * (30 * resolutionScale));
-            }
+        gc.setFill(Color.BLACK);
+        gc.setFont(Font.font("Times New Roman", 20 * resolutionScale));
+        String[] lines = upgrade.getDescription().split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            gc.fillText(lines[i], x + (double) width / 2, y + (250 * resolutionScale) + i * (30 * resolutionScale));
         }
     }
 
