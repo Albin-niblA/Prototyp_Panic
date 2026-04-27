@@ -1,6 +1,5 @@
-package model.wave;
+package model.managers;
 
-import model.managers.EnemyHandler;
 import model.entities.Enemy;
 import model.world.GameWorld;
 import model.entities.enemies.Slime;

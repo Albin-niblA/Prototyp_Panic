@@ -1,4 +1,6 @@
-package model.upgrades;
+package model.managers;
+
+import model.upgrades.Upgrades;
 
 import java.util.ArrayList;
 import java.util.Collections;

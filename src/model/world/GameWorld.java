@@ -1,9 +1,8 @@
 package model.world;
 
 import controller.InputHandler;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
-import model.upgrades.UpgradeManager;
+import model.managers.UpgradeManager;
 import model.upgrades.Upgrades;
 import model.entities.Enemy;
 import model.entities.Player;
@@ -12,12 +11,10 @@ import model.managers.EnemyHandler;
 import model.managers.EnemyProjectileManager;
 import model.managers.ProjectileManager;
 import model.managers.SoundManager;
-import model.wave.WaveManager;
+import model.managers.WaveManager;
 import model.weapon.Upgrade;
 import model.weapon.Weapon;
 import model.weapon.WeaponType;
-
-import java.awt.*;
 
 public class GameWorld {
     public static final int WORLD_WIDTH = 3200;

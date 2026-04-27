@@ -11,7 +11,7 @@ import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import model.upgrades.UpgradeManager;
+import model.managers.UpgradeManager;
 import model.upgrades.Upgrades;
 import model.world.GameState;
 import util.images.TextureAtlas;
