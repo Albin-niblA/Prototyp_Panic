@@ -8,7 +8,7 @@ import model.entities.Player;
 import model.managers.EffectManager;
 import model.managers.EnemyProjectileManager;
 import model.managers.ProjectileManager;
-import model.upgrades.UpgradeManager;
+import model.managers.UpgradeManager;
 import model.world.Camera;
 import model.world.GameWorld;
 import util.images.TextureAtlas;
