@@ -16,6 +16,9 @@ import view.GameRenderer;
 
 import java.util.List;
 
+/*
+* SKRIV INNEHÅLL HÄR
+* */
 public class GameController {
     private final Stage stage;
     private final int viewportWidth;

@@ -9,6 +9,9 @@ import util.settings.ControlSettings;
 import java.util.HashSet;
 import java.util.Set;
 
+/*
+* SKRIV INNEHÅLL HÄR
+* */
 public class InputHandler {
     private final Set<KeyCode> heldKeys = new HashSet<>();
     private final Set<KeyCode> justPressed = new HashSet<>();

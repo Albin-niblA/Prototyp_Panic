@@ -19,12 +19,6 @@ import util.images.TextureAtlas;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Ritar halvtransparenta överläggsmenyer ovanpå spelscenen.
- *
- * Anropas från GamePanel.render() med aktuellt GameState.
- * Lägg till nya case här när fler tillstånd behöver en skärm (t.ex. UPGRADE).
- */
 public class OverlayHandler {
     private UpgradeManager upgradeManager;
     private List<Upgrades> upgrades;
@@ -58,31 +52,36 @@ public class OverlayHandler {
     }
 
     private void drawPaused(GraphicsContext gc) {
-        dimBackground(gc, 0.5);
-        gc.setTextAlign(TextAlignment.CENTER);
-
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Times New Roman", 64 * resolutionScale));
-        gc.fillText("PAUSED", width / 2.0, height / 2.0 - (20 * resolutionScale));
-
-        gc.setFill(Color.LIGHTGRAY);
-        gc.setFont(Font.font("Arial", 22 * resolutionScale));
-        gc.fillText("Press ESC to continue", width / 2.0, height / 2.0 + (30 * resolutionScale));
-        gc.fillText("Press M to go back to main menu", width / 2.0, height / 2.0 + (65 * resolutionScale));
+        drawCenteredOverlay(gc, 0.5,
+                "PAUSED", 64, Color.WHITE, height / 2.0 - (20 * resolutionScale),
+                new String[]{"Press ESC to continue", "Press M to go back to main menu"},
+                height / 2.0 + (30 * resolutionScale));
     }
 
     private void drawGameOver(GraphicsContext gc) {
-        dimBackground(gc, 0.65);
+        drawCenteredOverlay(gc, 0.65,
+                "YOU LOST!", 72, Color.web("#FF4444"), height / 2.0 - (30 * resolutionScale),
+                new String[]{"Press R to play again", "Press M to go back to main menu"},
+                height / 2.0 + (30 * resolutionScale));
+    }
+
+    private void drawCenteredOverlay(GraphicsContext gc, double dimOpacity,
+                                     String title, double titleSize, Color titleColor, double titleY,
+                                     String[] hints, double hintsY) {
+        dimBackground(gc, dimOpacity);
         gc.setTextAlign(TextAlignment.CENTER);
 
-        gc.setFill(Color.web("#FF4444"));
-        gc.setFont(Font.font("Times New Roman", 72 * resolutionScale));
-        gc.fillText("YOU LOST!", width / 2.0, height / 2.0 - (30 * resolutionScale));
+        gc.setFill(titleColor);
+        gc.setFont(Font.font("Times New Roman", titleSize * resolutionScale));
+        gc.fillText(title, width / 2.0, titleY);
 
-        gc.setFill(Color.LIGHTGRAY);
-        gc.setFont(Font.font("Arial", 22 * resolutionScale));
-        gc.fillText("Press R to play again", width / 2.0, height / 2.0 + (30 * resolutionScale));
-        gc.fillText("Press M to go back to main menu", width / 2.0, height / 2.0 + (65 * resolutionScale));
+        if (hints != null) {
+            gc.setFill(Color.LIGHTGRAY);
+            gc.setFont(Font.font("Arial", 22 * resolutionScale));
+            for (int i = 0; i < hints.length; i++) {
+                gc.fillText(hints[i], width / 2.0, hintsY + i * (35 * resolutionScale));
+            }
+        }
     }
 
     public void drawUpgrade(GraphicsContext gc) {
@@ -90,11 +89,9 @@ public class OverlayHandler {
             upgrades = upgradeManager.rollThree();
         }
 
-        dimBackground(gc, 0.65);
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Times New Roman", 72 * resolutionScale));
-        gc.fillText("Choose an upgrade", width / 2.0, height / 5.0);
+        drawCenteredOverlay(gc, 0.65,
+                "Choose an upgrade", 72, Color.WHITE, height / 5.0,
+                null, 0);
 
         int cardWidth = width / 4;
         int cardHeight = height / 2;

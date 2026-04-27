@@ -93,19 +93,13 @@ public class GameRenderer {
             double px = pm.getX(i) - ox;
             double py = pm.getY(i) - oy;
 
-            if (px < -200 || px > viewportWidth + 200 ||
-                py < -200 || py > viewportHeight + 200) continue;
+            if (isOffscreen(px, py)) continue;
 
             double r = pm.getRadius(i) * resolutionScale;
-            int texID = pm.getTextureID(i);
-            Image tex = textures.getProjectileTexture(texID);
+            Image tex = textures.getProjectileTexture(pm.getTextureID(i));
 
             if (pm.isGrenade(i)) {
-                // Draw grenade without velocity-based rotation
-                gc.save();
-                gc.translate(px, py);
-                gc.drawImage(tex, -r, -r, r * 2, r * 2);
-                gc.restore();
+                drawSprite(gc, tex, px, py, r, 0);
 
                 // Draw pulsing explosion radius indicator when fuse < 1s
                 double fuseRemaining = pm.getFuseTimer(i);
@@ -118,13 +112,8 @@ public class GameRenderer {
                         explosionR * 2, explosionR * 2);
                 }
             } else {
-                // Normal projectile: rotate by velocity direction
                 double angle = Math.toDegrees(Math.atan2(pm.getVelY(i), pm.getVelX(i)));
-                gc.save();
-                gc.translate(px, py);
-                gc.rotate(angle);
-                gc.drawImage(tex, -r, -r, r * 2, r * 2);
-                gc.restore();
+                drawSprite(gc, tex, px, py, r, angle);
             }
         }
     }
@@ -135,20 +124,27 @@ public class GameRenderer {
             double px = epm.getX(i) - ox;
             double py = epm.getY(i) - oy;
 
-            if (px < -200 || px > viewportWidth + 200 ||
-                py < -200 || py > viewportHeight + 200) continue;
+            if (isOffscreen(px, py)) continue;
 
             double r = epm.getRadius(i);
-            int texID = epm.getTextureID(i);
-            Image tex = textures.getProjectileTexture(texID);
-
+            Image tex = textures.getProjectileTexture(epm.getTextureID(i));
             double angle = Math.toDegrees(Math.atan2(epm.getVelY(i), epm.getVelX(i)));
-            gc.save();
-            gc.translate(px, py);
-            gc.rotate(angle);
-            gc.drawImage(tex, -r, -r, r * 2, r * 2);
-            gc.restore();
+            drawSprite(gc, tex, px, py, r, angle);
         }
+    }
+
+    private boolean isOffscreen(double px, double py) {
+        return px < -200 || px > viewportWidth + 200
+            || py < -200 || py > viewportHeight + 200;
+    }
+
+    private void drawSprite(GraphicsContext gc, Image tex, double px, double py,
+                            double r, double angleDeg) {
+        gc.save();
+        gc.translate(px, py);
+        if (angleDeg != 0) gc.rotate(angleDeg);
+        gc.drawImage(tex, -r, -r, r * 2, r * 2);
+        gc.restore();
     }
 
     private void renderEffects(GraphicsContext gc, EffectManager em,

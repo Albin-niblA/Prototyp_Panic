@@ -15,6 +15,9 @@ import util.settings.SettingsListener;
 import view.SettingsMenu;
 import view.WeaponSelectDialog;
 
+/*
+* SKRIV INNEHÅLL HÄR
+* */
 public class Main extends Application implements GameListener, SettingsListener {
 
     private Stage stage;
