@@ -4,7 +4,7 @@ import javafx.scene.image.Image;
 
 public class TextureAtlas {
     private final Image[] playerTextures = new Image[8];
-    private final Image[] enemyTextures = new Image[3];
+    private final Image[] enemyTextures = new Image[6];
     private final Image[] projectileTextures = new Image[4];
     private final Image[] fxTextures = new Image[3];
     private final Image[] upgradeIcons = new Image[3];
@@ -23,6 +23,9 @@ public class TextureAtlas {
         enemyTextures[0] = load("/util/images/enemies/slime.png");
         enemyTextures[1] = load("/util/images/enemies/demonslime.png");
         enemyTextures[2] = load("/util/images/enemies/Bandit.png");
+        enemyTextures[3] = load("/util/images/enemies/frostMage.png");
+        enemyTextures[4] = load("/util/images/enemies/earthMage.png");
+        enemyTextures[5] = load("/util/images/enemies/fireMage.png");
 
         projectileTextures[0] = load("/util/images/projectiles/bullet1.png");
         projectileTextures[1] = load("/util/images/projectiles/arrow.png");

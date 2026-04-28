@@ -1,6 +1,7 @@
 package model.managers;
 
 import model.entities.Enemy;
+import model.entities.enemies.IceMage;
 import model.world.GameWorld;
 import model.entities.enemies.Slime;
 import model.entities.enemies.DemonSlime;
@@ -9,7 +10,7 @@ import model.entities.enemies.Bandit;
 import java.util.Random;
 
 public class WaveManager {
-    private int currentWave = 0;
+    private int currentWave = 3;
     private double spawnTimer = 0;
     private int enemiesSpawnedThisWave = 0;
     private int enemiesPerWave = 5;
@@ -64,6 +65,9 @@ public class WaveManager {
             e = new Slime(x, y);
         } else if (rand.nextDouble() < 0.35) {
             e = new Bandit(x, y);
+        } else if (rand.nextDouble() < 0.9){
+            e = new IceMage(x, y);
+
         } else {
             e = new DemonSlime(x, y);
         }
