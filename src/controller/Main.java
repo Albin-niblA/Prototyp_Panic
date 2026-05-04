@@ -15,41 +15,43 @@ import util.settings.SettingsListener;
 import view.SettingsMenu;
 import view.WeaponSelectDialog;
 
-/*
-* SKRIV INNEHÅLL HÄR
-* */
 public class Main extends Application implements GameListener, SettingsListener {
 
-    private Stage stage;
-    private static int WIDTH;
-    private static int HEIGHT;
     private static final int BASE_WIDTH = 1920;
     private static final int BASE_HEIGHT = 1080;
-    //private static final int BASE_DPI = 96;
-    private static double resolutionScale;
+
+    private Stage stage;
+    private int width;
+    private int height;
+    private double resolutionScale;
+    private GameController activeGame;
 
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-        setResolution();
+        stage.setOnCloseRequest(e -> shutdown());
+        initResolution();
         showMainMenu();
     }
 
-    private void setResolution() {
+    private void initResolution() {
         Rectangle2D screenBounds = Screen.getPrimary().getBounds();
-        WIDTH = (int) screenBounds.getWidth();
-        HEIGHT = (int) screenBounds.getHeight();
-        // DPI compensation gave weird results, skip it
-        //int dpi = (int) Screen.getPrimary().getDpi();
-        resolutionScale = Math.min((double) WIDTH / BASE_WIDTH, (double) HEIGHT / BASE_HEIGHT);
-        System.out.println("Screen width " + WIDTH + " vs base " + BASE_WIDTH);
-        System.out.println("Screen height " + HEIGHT + " vs base " + BASE_HEIGHT);
-        System.out.println("Scale: " + resolutionScale);
+        width = (int) screenBounds.getWidth();
+        height = (int) screenBounds.getHeight();
+        resolutionScale = Math.min((double) width / BASE_WIDTH, (double) height / BASE_HEIGHT);
         stage.setFullScreen(true);
     }
 
     private void showMainMenu() {
-        new MainMenu(stage, this, WIDTH, HEIGHT, resolutionScale).show();
+        new MainMenu(stage, this, width, height, resolutionScale).show();
+    }
+
+    private void shutdown() {
+        if (activeGame != null) {
+            activeGame.stop();
+        }
+        Platform.exit();
+        System.exit(0);
     }
 
     @Override
@@ -58,13 +60,16 @@ public class Main extends Application implements GameListener, SettingsListener 
             case START -> {
                 WeaponSelectDialog dialog = new WeaponSelectDialog(stage, resolutionScale);
                 WeaponType weapon = dialog.showAndWait();
-                GameController gc = new GameController(stage, WIDTH, HEIGHT, resolutionScale, weapon);
-                gc.setOnReturnToMenu(this::showMainMenu);
+                GameController gc = new GameController(stage, width, height, resolutionScale, weapon);
+                gc.setOnReturnToMenu(() -> {
+                    activeGame = null;
+                    showMainMenu();
+                });
+                activeGame = gc;
                 gc.start();
             }
-            case SETTINGS -> new SettingsMenu(stage, this, this::showMainMenu, WIDTH, HEIGHT, resolutionScale).show();
-            case EXIT -> Platform.exit();
-            default -> { }
+            case SETTINGS -> new SettingsMenu(stage, this, this::showMainMenu, width, height, resolutionScale).show();
+            case EXIT -> shutdown();
         }
     }
 

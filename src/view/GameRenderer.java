@@ -13,23 +13,25 @@ import model.world.Camera;
 import model.world.GameWorld;
 import util.images.TextureAtlas;
 
-
 public class GameRenderer {
+
+    private static final int EFFECT_FRAME_SIZE = 32;
+
     private final int viewportWidth;
     private final int viewportHeight;
     private final double resolutionScale;
+    private final int gridSize;
     private final Camera camera;
     private final TextureAtlas textures;
     private final HUD hud;
     private final OverlayHandler overlay;
 
-    private final int GRID_SIZE;
-
-    public GameRenderer(int viewportWidth, int viewportHeight, double resolutionScale, Camera camera, UpgradeManager upgradeManager) {
+    public GameRenderer(int viewportWidth, int viewportHeight, double resolutionScale,
+                        Camera camera, UpgradeManager upgradeManager) {
         this.viewportWidth = viewportWidth;
         this.viewportHeight = viewportHeight;
         this.resolutionScale = resolutionScale;
-        GRID_SIZE = (int) (60 * resolutionScale);
+        this.gridSize = (int) (60 * resolutionScale);
         this.camera = camera;
         this.textures = new TextureAtlas();
         this.hud = new HUD(viewportWidth, viewportHeight, resolutionScale);
@@ -40,59 +42,52 @@ public class GameRenderer {
         double ox = camera.getOffsetX();
         double oy = camera.getOffsetY();
 
-        // Background
-        gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, viewportWidth, viewportHeight);
-
-        // Grid (camera-aware)
-        gc.setStroke(Color.GREY);
-        gc.setLineWidth(1);
-        double startX = -(ox % GRID_SIZE);
-        double startY = -(oy % GRID_SIZE);
-        for (double x = startX; x < viewportWidth; x += GRID_SIZE) {
-            gc.strokeLine(x, 0, x, viewportHeight);
-        }
-        for (double y = startY; y < viewportHeight; y += GRID_SIZE) {
-            gc.strokeLine(0, y, viewportWidth, y);
-        }
-
-        // Projectiles
+        renderBackground(gc, ox, oy);
         renderProjectiles(gc, world.getProjectileManager(), ox, oy);
         renderEnemyProjectiles(gc, world.getEnemyProjectileManager(), ox, oy);
-
-        // Player
-        Player p = world.getPlayer();
-        Image pTex = textures.getPlayerTexture(p.getMoveDir());
-        double ps = p.getSize() * resolutionScale;
-        if (!p.isBlinking()) {
-            gc.drawImage(pTex, p.getX() - ps / 2 - ox, p.getY() - ps / 2 - oy, ps, ps);
-        }
-
-        // Enemies
-        for (Enemy e : world.getEnemyHandler().getEnemies()) {
-            if (!camera.isVisible(e.getX(), e.getY(), e.getSize())) continue;
-            Image eTex = textures.getEnemyTexture(e.getTextureID());
-            double es = e.getSize() * resolutionScale;
-            gc.drawImage(eTex, e.getX() - es / 2 - ox, e.getY() - es / 2 - oy, es, es);
-        }
-
-        // Effects
+        renderPlayer(gc, world.getPlayer(), ox, oy);
+        renderEnemies(gc, world, ox, oy);
         renderEffects(gc, world.getEffectManager(), ox, oy);
-
-        // HUD (screen-space)
         hud.draw(gc, world);
-
-        // Overlay (pause/game over)
         overlay.draw(gc, world.getState());
     }
 
+    private void renderBackground(GraphicsContext gc, double ox, double oy) {
+        gc.setFill(Color.WHITE);
+        gc.fillRect(0, 0, viewportWidth, viewportHeight);
 
-    private void renderProjectiles(GraphicsContext gc, ProjectileManager pm,
-                                    double ox, double oy) {
+        gc.setStroke(Color.GREY);
+        gc.setLineWidth(1);
+        double startX = -(ox % gridSize);
+        double startY = -(oy % gridSize);
+        for (double x = startX; x < viewportWidth; x += gridSize) {
+            gc.strokeLine(x, 0, x, viewportHeight);
+        }
+        for (double y = startY; y < viewportHeight; y += gridSize) {
+            gc.strokeLine(0, y, viewportWidth, y);
+        }
+    }
+
+    private void renderPlayer(GraphicsContext gc, Player p, double ox, double oy) {
+        if (p.isBlinking()) return;
+        Image tex = textures.getPlayerTexture(p.getMoveDir());
+        double size = p.getSize() * resolutionScale;
+        gc.drawImage(tex, p.getX() - size / 2 - ox, p.getY() - size / 2 - oy, size, size);
+    }
+
+    private void renderEnemies(GraphicsContext gc, GameWorld world, double ox, double oy) {
+        for (Enemy e : world.getEnemyHandler().getEnemies()) {
+            if (!camera.isVisible(e.getX(), e.getY(), e.getSize())) continue;
+            Image tex = textures.getEnemyTexture(e.getTextureID());
+            double size = e.getSize() * resolutionScale;
+            gc.drawImage(tex, e.getX() - size / 2 - ox, e.getY() - size / 2 - oy, size, size);
+        }
+    }
+
+    private void renderProjectiles(GraphicsContext gc, ProjectileManager pm, double ox, double oy) {
         for (int i = 0; i < pm.getCount(); i++) {
             double px = pm.getX(i) - ox;
             double py = pm.getY(i) - oy;
-
             if (isOffscreen(px, py)) continue;
 
             double r = pm.getRadius(i) * resolutionScale;
@@ -100,17 +95,7 @@ public class GameRenderer {
 
             if (pm.isGrenade(i)) {
                 drawSprite(gc, tex, px, py, r, 0);
-
-                // Draw pulsing explosion radius indicator when fuse < 1s
-                double fuseRemaining = pm.getFuseTimer(i);
-                if (fuseRemaining < 1.0) {
-                    double alpha = 0.15 + 0.25 * (1.0 - fuseRemaining);
-                    gc.setStroke(Color.rgb(255, 60, 30, alpha));
-                    gc.setLineWidth(2);
-                    double explosionR = 150 * resolutionScale;
-                    gc.strokeOval(px - explosionR, py - explosionR,
-                        explosionR * 2, explosionR * 2);
-                }
+                drawGrenadeFuseIndicator(gc, pm, i, px, py);
             } else {
                 double angle = Math.toDegrees(Math.atan2(pm.getVelY(i), pm.getVelX(i)));
                 drawSprite(gc, tex, px, py, r, angle);
@@ -118,12 +103,23 @@ public class GameRenderer {
         }
     }
 
+    private void drawGrenadeFuseIndicator(GraphicsContext gc, ProjectileManager pm,
+                                           int i, double px, double py) {
+        double fuseRemaining = pm.getFuseTimer(i);
+        if (fuseRemaining >= 1.0) return;
+
+        double alpha = 0.15 + 0.25 * (1.0 - fuseRemaining);
+        gc.setStroke(Color.rgb(255, 60, 30, alpha));
+        gc.setLineWidth(2);
+        double explosionR = 150 * resolutionScale;
+        gc.strokeOval(px - explosionR, py - explosionR, explosionR * 2, explosionR * 2);
+    }
+
     private void renderEnemyProjectiles(GraphicsContext gc, EnemyProjectileManager epm,
-                                           double ox, double oy) {
+                                         double ox, double oy) {
         for (int i = 0; i < epm.getCount(); i++) {
             double px = epm.getX(i) - ox;
             double py = epm.getY(i) - oy;
-
             if (isOffscreen(px, py)) continue;
 
             double r = epm.getRadius(i);
@@ -133,9 +129,23 @@ public class GameRenderer {
         }
     }
 
-    private boolean isOffscreen(double px, double py) {
-        return px < -200 || px > viewportWidth + 200
-            || py < -200 || py > viewportHeight + 200;
+    private void renderEffects(GraphicsContext gc, EffectManager em, double ox, double oy) {
+        for (int i = 0; i < em.getCount(); i++) {
+            double x = em.getX(i) - ox;
+            double y = em.getY(i) - oy;
+            int frame = em.getFrame(i);
+            int fxID = em.getEffectID(i);
+            Image sheet = textures.getEffectTexture(fxID);
+
+            int cols = (int) (sheet.getWidth() / EFFECT_FRAME_SIZE);
+            int sx = (frame % cols) * EFFECT_FRAME_SIZE;
+            int sy = (frame / cols) * EFFECT_FRAME_SIZE;
+            int size = (int) (em.getEffectSize(fxID) * resolutionScale);
+
+            gc.drawImage(sheet,
+                    sx, sy, EFFECT_FRAME_SIZE, EFFECT_FRAME_SIZE,
+                    x - size / 2.0, y - size / 2.0, size, size);
+        }
     }
 
     private void drawSprite(GraphicsContext gc, Image tex, double px, double py,
@@ -147,32 +157,9 @@ public class GameRenderer {
         gc.restore();
     }
 
-    private void renderEffects(GraphicsContext gc, EffectManager em,
-                               double ox, double oy) {
-
-        for (int i = 0; i < em.getCount(); i++) {
-            double x = em.getX(i) - ox;
-            double y = em.getY(i) - oy;
-
-            int frame = em.getFrame(i);
-            int fxID = em.getEffectID(i);
-
-            Image sheet = textures.getEffectTexture(fxID);
-
-            int frameWidth = 32;
-            int frameHeight = 32;
-
-            int cols = (int)(sheet.getWidth() / frameWidth);
-
-            int sx = (frame % cols) * frameWidth;
-            int sy = (frame / cols) * frameHeight;
-
-            int size = (int) (em.getEffectSize(em.getEffectID(i)) * resolutionScale);
-            gc.drawImage(sheet,
-                    sx, sy, frameWidth, frameHeight,
-                    x - size / 2.0, y - size / 2.0,
-                    size, size);
-        }
+    private boolean isOffscreen(double px, double py) {
+        return px < -200 || px > viewportWidth + 200
+                || py < -200 || py > viewportHeight + 200;
     }
 
     public OverlayHandler getOverlay() {

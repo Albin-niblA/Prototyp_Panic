@@ -1,8 +1,10 @@
 package util.images;
 
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 
 public class TextureAtlas {
+
     private final Image[] playerTextures = new Image[8];
     private final Image[] enemyTextures = new Image[6];
     private final Image[] projectileTextures = new Image[4];
@@ -18,7 +20,6 @@ public class TextureAtlas {
         playerTextures[5] = load("/util/images/player/pFR.png");
         playerTextures[6] = load("/util/images/player/pBL.png");
         playerTextures[7] = load("/util/images/player/pBR.png");
-
 
         enemyTextures[0] = load("/util/images/enemies/slime.png");
         enemyTextures[1] = load("/util/images/enemies/demonslime.png");
@@ -45,10 +46,8 @@ public class TextureAtlas {
         return new Image(getClass().getResourceAsStream(path));
     }
 
-    // laddar spritesheets
     private Image[] loadSheet(String path, int frameWidth, int frameHeight) {
         Image sheet = load(path);
-
         int cols = (int) (sheet.getWidth() / frameWidth);
         int rows = (int) (sheet.getHeight() / frameHeight);
         Image[] frames = new Image[cols * rows];
@@ -56,24 +55,18 @@ public class TextureAtlas {
         int index = 0;
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                frames[index++] = new javafx.scene.image.WritableImage(
+                frames[index++] = new WritableImage(
                         sheet.getPixelReader(),
-                        x * frameWidth,
-                        y * frameHeight,
-                        frameWidth,
-                        frameHeight
-                );
+                        x * frameWidth, y * frameHeight,
+                        frameWidth, frameHeight);
             }
         }
-
         return frames;
     }
 
     public Image getPlayerTexture(int dir) { return playerTextures[dir]; }
     public Image getEnemyTexture(int id) { return enemyTextures[id]; }
     public Image getProjectileTexture(int id) { return projectileTextures[id]; }
-    public Image getEffectTexture(int fxID) {
-        return fxTextures[fxID];
-    }
+    public Image getEffectTexture(int fxID) { return fxTextures[fxID]; }
     public Image getUpgradeIcon(int iconID) { return upgradeIcons[iconID]; }
 }

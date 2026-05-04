@@ -9,36 +9,22 @@ import util.settings.ControlSettings;
 import java.util.HashSet;
 import java.util.Set;
 
-/*
-* SKRIV INNEHÅLL HÄR
-* */
 public class InputHandler {
+
     private final Set<KeyCode> heldKeys = new HashSet<>();
     private final Set<KeyCode> justPressed = new HashSet<>();
     private double mouseX;
     private double mouseY;
-    private boolean mouseClicked = false;
+    private boolean mouseClicked;
 
     public void attachTo(Scene scene) {
         scene.setOnKeyPressed(e -> {
             heldKeys.add(e.getCode());
             justPressed.add(e.getCode());
         });
-
-        scene.setOnKeyReleased(e -> {
-            heldKeys.remove(e.getCode());
-        });
-
-        scene.setOnMouseMoved(e -> {
-            mouseX = e.getX();
-            mouseY = e.getY();
-        });
-
-        scene.setOnMouseDragged(e -> {
-            mouseX = e.getX();
-            mouseY = e.getY();
-        });
-
+        scene.setOnKeyReleased(e -> heldKeys.remove(e.getCode()));
+        scene.setOnMouseMoved(e -> { mouseX = e.getX(); mouseY = e.getY(); });
+        scene.setOnMouseDragged(e -> { mouseX = e.getX(); mouseY = e.getY(); });
         scene.setOnMouseClicked(e -> {
             if (e.getButton() == MouseButton.PRIMARY) {
                 mouseClicked = true;

@@ -14,32 +14,21 @@ import model.weapon.WeaponType;
 import model.managers.SoundManager;
 import view.GameRenderer;
 
-import java.util.List;
-
-/*
-* SKRIV INNEHÅLL HÄR
-* */
 public class GameController {
-    private final Stage stage;
-    private final int viewportWidth;
-    private final int viewportHeight;
-    private final double resolutionScale;
 
+    private final Stage stage;
     private final GameWorld world;
     private final InputHandler input;
     private final GameRenderer renderer;
     private final Camera camera;
-
     private final AnimationTimer gameLoop;
     private final GraphicsContext gc;
+
     private long lastTime = -1;
     private Runnable onReturnToMenu;
 
     public GameController(Stage stage, int width, int height, double resolutionScale, WeaponType weaponType) {
         this.stage = stage;
-        this.viewportWidth = width;
-        this.viewportHeight = height;
-        this.resolutionScale = resolutionScale;
 
         SoundManager.init();
 
@@ -89,11 +78,13 @@ public class GameController {
             }
         }
 
-        if (input.wasPressed(KeyCode.M) &&
-            (world.getState() == GameState.PAUSED || world.getState() == GameState.GAME_OVER)) {
+        if (input.wasPressed(KeyCode.M)
+                && (world.getState() == GameState.PAUSED || world.getState() == GameState.GAME_OVER)) {
             world.reset();
             gameLoop.stop();
-            if (onReturnToMenu != null) onReturnToMenu.run();
+            if (onReturnToMenu != null) {
+                onReturnToMenu.run();
+            }
             return;
         }
 

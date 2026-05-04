@@ -3,10 +3,11 @@ package view;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import model.world.GameWorld;
 import model.entities.Player;
+import model.world.GameWorld;
 
 public class HUD {
+
     private final int screenWidth;
     private final int screenHeight;
     private final double resolutionScale;
@@ -23,11 +24,10 @@ public class HUD {
     }
 
     private void drawHealthBar(GraphicsContext gc, Player p) {
-        double barWidth = (double) screenWidth / 5;
-        double barHeight = (double) screenHeight / 30;
-        double barX = (double) screenWidth / 70;
-        double barY = screenHeight - (double) screenHeight / 20;
-
+        double barWidth = screenWidth / 5.0;
+        double barHeight = screenHeight / 30.0;
+        double barX = screenWidth / 70.0;
+        double barY = screenHeight - screenHeight / 20.0;
         double healthPct = (double) p.getHealth() / p.getMaxHealth();
 
         gc.setFill(Color.DARKGRAY);
@@ -46,17 +46,18 @@ public class HUD {
         gc.strokeRect(barX, barY, barWidth, barHeight);
 
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", 16));
+        gc.setFont(Font.font("Arial", 16 * resolutionScale));
         gc.fillText("HP: " + p.getHealth() + " / " + p.getMaxHealth(),
-                     barX + 10, barY + 18);
+                barX + 10, barY + barHeight * 0.6);
     }
 
     private void drawWaveInfo(GraphicsContext gc, GameWorld world) {
         gc.setFill(Color.BLACK);
-        gc.setFont(Font.font("Arial", 22));
+        gc.setFont(Font.font("Arial", 22 * resolutionScale));
+        double rightMargin = screenWidth - 200 * resolutionScale;
         gc.fillText("Wave: " + world.getWaveManager().getCurrentWave(),
-                     screenWidth - 200, 35);
+                rightMargin, 35 * resolutionScale);
         gc.fillText("Enemies: " + world.getEnemyHandler().getCount(),
-                     screenWidth - 200, 65);
+                rightMargin, 65 * resolutionScale);
     }
 }

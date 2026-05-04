@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import util.settings.SettingsListener;
 
 public class SettingsMenu {
+
     private static final String ACTIVE_STYLE =
             "-fx-border-width: 4; -fx-border-color: #4a9eff; -fx-background-color: transparent; -fx-cursor: hand;";
     private static final String INACTIVE_STYLE =
@@ -24,12 +25,11 @@ public class SettingsMenu {
     private final VBox wasdBox;
     private final VBox arrowBox;
     private final SettingsListener listener;
-    private double resolutionScale;
 
-    public SettingsMenu(Stage stage, SettingsListener listener, Runnable onBack, int width, int height, double resolutionScale) {
+    public SettingsMenu(Stage stage, SettingsListener listener, Runnable onBack,
+                        int width, int height, double resolutionScale) {
         this.stage = stage;
         this.listener = listener;
-        this.resolutionScale = resolutionScale;
 
         Text title = new Text("Settings");
         title.setFont(new Font(40 * resolutionScale));
@@ -37,17 +37,11 @@ public class SettingsMenu {
         Text subtitle = new Text("Select control scheme");
         subtitle.setFont(new Font(18 * resolutionScale));
 
-        wasdBox = createImageBox("WASD", "/util/images/assets/WASD_Keys.png");
-        arrowBox = createImageBox("Arrow keys", "/util/images/assets/Arrow_Keys.png");
+        wasdBox = createImageBox("WASD", "/util/images/assets/WASD_Keys.png", resolutionScale);
+        arrowBox = createImageBox("Arrow keys", "/util/images/assets/Arrow_Keys.png", resolutionScale);
 
-        wasdBox.setOnMouseClicked(e -> {
-            listener.onWasdSelected();
-            updateHighlight();
-        });
-        arrowBox.setOnMouseClicked(e -> {
-            listener.onArrowKeysSelected();
-            updateHighlight();
-        });
+        wasdBox.setOnMouseClicked(e -> { listener.onWasdSelected(); updateHighlight(); });
+        arrowBox.setOnMouseClicked(e -> { listener.onArrowKeysSelected(); updateHighlight(); });
         updateHighlight();
 
         HBox controlsRow = new HBox(60 * resolutionScale, wasdBox, arrowBox);
@@ -65,11 +59,12 @@ public class SettingsMenu {
         scene = new Scene(layout, width, height);
     }
 
-    private VBox createImageBox(String label, String imagePath) {
-        Image img = new Image(getClass().getResourceAsStream(imagePath), 200*resolutionScale, 200*resolutionScale, true, false);
+    private VBox createImageBox(String label, String imagePath, double resolutionScale) {
+        Image img = new Image(getClass().getResourceAsStream(imagePath),
+                200 * resolutionScale, 200 * resolutionScale, true, false);
         ImageView imageView = new ImageView(img);
-        imageView.setFitWidth(200*resolutionScale);
-        imageView.setFitHeight(200*resolutionScale);
+        imageView.setFitWidth(200 * resolutionScale);
+        imageView.setFitHeight(200 * resolutionScale);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(false);
 

@@ -21,33 +21,30 @@ public class WeaponSelectDialog {
         dialog = new Stage();
         dialog.initOwner(owner);
         dialog.initModality(Modality.APPLICATION_MODAL);
-
-        Label title = new Label("Choose your weapon:");
+        dialog.setTitle("Weapon Select");
 
         ToggleGroup group = new ToggleGroup();
         WeaponType[] types = WeaponType.values();
-        RadioButton[] buttons = new RadioButton[types.length];
 
         VBox layout = new VBox(10 * resolutionScale);
         layout.setAlignment(Pos.CENTER_LEFT);
         layout.setPadding(new Insets(20 * resolutionScale));
-        layout.getChildren().add(title);
+        layout.getChildren().add(new Label("Choose your weapon:"));
 
         for (int i = 0; i < types.length; i++) {
-            buttons[i] = new RadioButton(types[i].getDisplayName());
-            buttons[i].setToggleGroup(group);
-            final WeaponType wt = types[i];
-            buttons[i].setOnAction(e -> selectedWeapon = wt);
-            layout.getChildren().add(buttons[i]);
+            RadioButton rb = new RadioButton(types[i].getDisplayName());
+            rb.setToggleGroup(group);
+            WeaponType wt = types[i];
+            rb.setOnAction(e -> selectedWeapon = wt);
+            if (i == 0) rb.setSelected(true);
+            layout.getChildren().add(rb);
         }
-        buttons[0].setSelected(true);
 
         Button confirm = new Button("Start");
         confirm.setOnAction(e -> dialog.close());
         layout.getChildren().add(confirm);
 
         dialog.setScene(new Scene(layout, 200 * resolutionScale, 200 * resolutionScale));
-        dialog.setTitle("Weapon Select");
     }
 
     public WeaponType showAndWait() {

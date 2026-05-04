@@ -9,6 +9,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class MainMenu {
+
     private final Stage stage;
     private final Scene scene;
 
