@@ -6,7 +6,6 @@ import javafx.scene.paint.Color;
 import model.entities.Enemy;
 import model.entities.Player;
 import model.managers.EffectManager;
-import model.managers.EnemyProjectileManager;
 import model.managers.ProjectileManager;
 import model.managers.UpgradeManager;
 import model.world.Camera;
@@ -53,18 +52,30 @@ public class GameRenderer {
     }
 
     private void renderBackground(GraphicsContext gc, double ox, double oy) {
-        gc.setFill(Color.WHITE);
+        gc.setFill(Color.web("#a1a6ac"));
         gc.fillRect(0, 0, viewportWidth, viewportHeight);
 
-        gc.setStroke(Color.GREY);
-        gc.setLineWidth(1);
         double startX = -(ox % gridSize);
         double startY = -(oy % gridSize);
-        for (double x = startX; x < viewportWidth; x += gridSize) {
-            gc.strokeLine(x, 0, x, viewportHeight);
-        }
+
+        int col = (int) (ox / gridSize);
+        int row = (int) (oy / gridSize);
+
+        Image[] tiles = textures.getMapSheet();
+
         for (double y = startY; y < viewportHeight; y += gridSize) {
-            gc.strokeLine(0, y, viewportWidth, y);
+            for (double x = startX; x < viewportWidth; x += gridSize) {
+                int gridCol = col + (int) ((x - startX) / gridSize);
+                int gridRow = row + (int) ((y - startY) / gridSize);
+
+                // Hash multiplies by 2 prime numbers resulting in a pseudo-random pattern instead of a diagonal pattern of the tiles
+                int hash = (gridCol * 1619 + gridRow * 31337) ^ (gridCol * gridRow);
+
+                if (Math.abs(hash) % 7 == 0) {
+                    int tileIndex = Math.abs(hash) % tiles.length;
+                    gc.drawImage(tiles[tileIndex], x, y, gridSize, gridSize);
+                }
+            }
         }
     }
 
