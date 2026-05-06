@@ -129,7 +129,7 @@ public class ProjectileManager {
     public void addGrenade(double x, double y, double r,
                             double targetX, double targetY,
                             double speed, int projID, int effID, int dmg,
-                            double fuseTime, double explRadius) {
+                            double fuseTime, double explRadius, boolean isEnemy) {
         if (projectileCount >= MAX_PROJECTILES) return;
 
         posX[projectileCount] = x;
@@ -157,6 +157,7 @@ public class ProjectileManager {
         this.fuseTimer[projectileCount] = fuseTime;
         this.deceleration[projectileCount] = adjustedSpeed / fuseTime;
         this.explosionRadius[projectileCount] = explRadius;
+        this.isEnemy[projectileCount] = isEnemy;
         projectileCount++;
     }
 

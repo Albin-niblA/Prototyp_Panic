@@ -25,7 +25,7 @@ public class Grenade extends Weapon implements Upgrade {
     @Override
     public void shoot(ProjectileManager pm, double originX, double originY, double targetX, double targetY) {
         pm.addGrenade(originX, originY, getProjectileRadius(), targetX, targetY, getProjectileSpeed(), getTextureId(),
-                0, getDamage(), fuseTime, explosionRadius);
+                0, getDamage(), fuseTime, explosionRadius, false);
     }
 
     @Override
