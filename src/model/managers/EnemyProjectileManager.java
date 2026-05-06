@@ -1,6 +1,7 @@
 package model.managers;
 
 public class EnemyProjectileManager {
+    /*
     private static final int MAX_PROJECTILES = 500;
     private int projectileCount = 0;
     private final double worldWidth;
@@ -99,4 +100,6 @@ public class EnemyProjectileManager {
     public double getVelY(int i) { return velY[i]; }
     public int getTextureID(int i) { return textureID[i]; }
     public int getDamage(int i) { return damage[i]; }
+
+     */
 }

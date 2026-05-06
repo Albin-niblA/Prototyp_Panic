@@ -1,7 +1,7 @@
 package model.entities.enemies;
 
 import model.entities.Enemy;
-import model.managers.EnemyProjectileManager;
+import model.managers.ProjectileManager;
 
 public class Bandit extends Enemy {
 
@@ -19,21 +19,13 @@ public class Bandit extends Enemy {
     private int strafeDirection = 1;
 
     public Bandit(double x, double y) {
-        this.x = x;
-        this.y = y;
-        this.size = 100;
-        this.health = 300;
-        this.maxHealth = 300;
-        this.movementSpeed = 100;
-        this.contactDamage = 10;
-        this.textureID = 2;
-
+        super(x, y, 100, 300, 100, 10, 2, 10, 30);
         this.strafeDirection = Math.random() < 0.5 ? 1 : -1;
     }
 
     @Override
     public void update(double deltaTime, double playerX, double playerY,
-                        EnemyProjectileManager projectileManager) {
+                        ProjectileManager projectileManager) {
         double dx = playerX - x;
         double dy = playerY - y;
         double dist = Math.sqrt(dx * dx + dy * dy);
@@ -76,7 +68,7 @@ public class Bandit extends Enemy {
             projectileManager.addProjectile(
                     x, y, PROJECTILE_RADIUS,
                     playerX, playerY,
-                    PROJECTILE_SPEED, PROJECTILE_TEXTURE_ID, PROJECTILE_DAMAGE
+                    PROJECTILE_SPEED, PROJECTILE_TEXTURE_ID, 0, PROJECTILE_DAMAGE, true
             );
             shootTimer = SHOOT_COOLDOWN;
         }

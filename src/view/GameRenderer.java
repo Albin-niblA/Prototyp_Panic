@@ -45,7 +45,6 @@ public class GameRenderer {
 
         renderBackground(gc, ox, oy);
         renderProjectiles(gc, world.getProjectileManager(), ox, oy);
-        renderEnemyProjectiles(gc, world.getEnemyProjectileManager(), ox, oy);
         renderPlayer(gc, world.getPlayer(), ox, oy);
         renderEnemies(gc, world, ox, oy);
         renderEffects(gc, world.getEffectManager(), ox, oy);
@@ -130,6 +129,7 @@ public class GameRenderer {
         gc.strokeOval(px - explosionR, py - explosionR, explosionR * 2, explosionR * 2);
     }
 
+    /*
     private void renderEnemyProjectiles(GraphicsContext gc, EnemyProjectileManager epm,
                                          double ox, double oy) {
         for (int i = 0; i < epm.getCount(); i++) {
@@ -142,7 +142,7 @@ public class GameRenderer {
             double angle = Math.toDegrees(Math.atan2(epm.getVelY(i), epm.getVelX(i)));
             drawSprite(gc, tex, px, py, r, angle);
         }
-    }
+    }*/
 
     private void renderEffects(GraphicsContext gc, EffectManager em, double ox, double oy) {
         for (int i = 0; i < em.getCount(); i++) {
