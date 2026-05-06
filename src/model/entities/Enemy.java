@@ -1,9 +1,23 @@
 package model.entities;
 
-import model.managers.EnemyProjectileManager;
+import model.managers.ProjectileManager;
 
 public abstract class Enemy extends Entity {
     protected int textureID;
+    protected int coinDropAmount;
+    protected int xpDropAmount;
+
+    public Enemy(double x, double y, int size, int maxHealth, int movementSpeed,
+                 int contactDamage, int textureID, int coinDropAmount, int xpDropAmount) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.health = maxHealth;
+        this.maxHealth = maxHealth;
+        this.movementSpeed = movementSpeed;
+        this.contactDamage = contactDamage;
+        this.textureID = textureID;
+    }
 
     public void update(double deltaTime, double playerX, double playerY) {
         double dx = playerX - x;
@@ -17,7 +31,7 @@ public abstract class Enemy extends Entity {
     }
 
     public void update(double deltaTime, double playerX, double playerY,
-                        EnemyProjectileManager projectileManager) {
+                        ProjectileManager projectileManager) {
         update(deltaTime, playerX, playerY);
     }
 

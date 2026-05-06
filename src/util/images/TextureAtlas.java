@@ -10,6 +10,7 @@ public class TextureAtlas {
     private final Image[] projectileTextures = new Image[4];
     private final Image[] fxTextures = new Image[3];
     private final Image[] upgradeIcons = new Image[3];
+    private Image[] mapSheet = new Image[6];
 
     public TextureAtlas() {
         playerTextures[0] = load("/util/images/player/pFront.png");
@@ -40,6 +41,8 @@ public class TextureAtlas {
         upgradeIcons[0] = load("/util/images/upgradeIcons/multishotIcon.png");
         upgradeIcons[1] = load("/util/images/upgradeIcons/nimbleIcon.png");
         upgradeIcons[2] = load("/util/images/upgradeIcons/blinkIcon.png");
+
+        mapSheet = loadSheet("/util/images/map.png", 32, 32);
     }
 
     private Image load(String path) {
@@ -69,4 +72,5 @@ public class TextureAtlas {
     public Image getProjectileTexture(int id) { return projectileTextures[id]; }
     public Image getEffectTexture(int fxID) { return fxTextures[fxID]; }
     public Image getUpgradeIcon(int iconID) { return upgradeIcons[iconID]; }
+    public Image[] getMapSheet() { return mapSheet; }
 }

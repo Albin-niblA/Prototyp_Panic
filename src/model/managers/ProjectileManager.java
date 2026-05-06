@@ -14,6 +14,7 @@ public class ProjectileManager {
     private final int[] projectileID = new int[MAX_PROJECTILES];
     private final int[] effectID = new int[MAX_PROJECTILES];
     private final int[] damage = new int[MAX_PROJECTILES];
+    private final boolean[] isEnemy = new boolean[MAX_PROJECTILES];
 
     private final double[] fuseTimer = new double[MAX_PROJECTILES];
     private final double[] deceleration = new double[MAX_PROJECTILES];
@@ -73,12 +74,13 @@ public class ProjectileManager {
         fuseTimer[index] = fuseTimer[last];
         deceleration[index] = deceleration[last];
         explosionRadius[index] = explosionRadius[last];
+        isEnemy[index] = isEnemy[last];
         projectileCount--;
     }
 
     public void addProjectile(double x, double y, double r,
                                double targetX, double targetY,
-                               double speed, int projID, int effID, int dmg) {
+                               double speed, int projID, int effID, int dmg, boolean enemy) {
         if (projectileCount >= MAX_PROJECTILES) return;
 
         posX[projectileCount] = x;
@@ -103,12 +105,13 @@ public class ProjectileManager {
         fuseTimer[projectileCount] = 0;
         deceleration[projectileCount] = 0;
         explosionRadius[projectileCount] = 0;
+        isEnemy[projectileCount] = enemy;
         projectileCount++;
     }
 
     public void addProjectiles(double x, double y, double r,
                                double targetX, double targetY,
-                               double speed, int projID, int effID, int dmg, int amountOfProjectiles) {
+                               double speed, int projID, int effID, int dmg, int amountOfProjectiles, boolean isEnemy) {
         if (projectileCount + amountOfProjectiles >= MAX_PROJECTILES) return;
 
         // below contains logic for creating a spread of projectiles
@@ -119,7 +122,7 @@ public class ProjectileManager {
             double angle = centerAngle - SPREAD_ANGLE / 2 + i * (SPREAD_ANGLE / (amountOfProjectiles - 1));
             double targetXOffset = x + Math.cos(angle);
             double targetYOffset = y + Math.sin(angle);
-            addProjectile(x, y, r, targetXOffset, targetYOffset, speed, projID, effID, dmg);
+            addProjectile(x, y, r, targetXOffset, targetYOffset, speed, projID, effID, dmg, isEnemy);
         }
     }
 
@@ -157,6 +160,22 @@ public class ProjectileManager {
         projectileCount++;
     }
 
+    public int checkPlayerHit(double playerX, double playerY, double playerRadius) {
+        for (int i = 0; i < projectileCount; i++) {
+            if (!isEnemy[i]) continue;
+            double dx = posX[i] - playerX;
+            double dy = posY[i] - playerY;
+            double dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < radius[i] + playerRadius) {
+                int dmg = damage[i];
+                deleteProjectile(i);
+                return dmg;
+            }
+        }
+        return 0;
+    }
+
     public void clear() {
         projectileCount = 0;
     }
@@ -172,4 +191,5 @@ public class ProjectileManager {
     public boolean isGrenade(int i) { return projectileID[i] == 3; }
     public double getFuseTimer(int i) { return fuseTimer[i]; }
     public double getExplosionRadius(int i) { return explosionRadius[i]; }
+    public boolean getIsEnemy(int i) { return isEnemy[i]; }
 }

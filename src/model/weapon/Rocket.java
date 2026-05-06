@@ -17,7 +17,7 @@ public class Rocket extends Shootable implements Upgrade{
     @Override
     public void shoot(ProjectileManager pm, double originX, double originY, double targetX, double targetY) {
         pm.addProjectile(originX, originY, getProjectileRadius(), targetX, targetY, getProjectileSpeed(),
-                getTextureId(), 0, getDamage());
+                getTextureId(), 0, getDamage(), false);
     }
 
     @Override
