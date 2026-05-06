@@ -12,6 +12,7 @@ import model.managers.UpgradeManager;
 import model.world.Camera;
 import model.world.GameWorld;
 import util.images.TextureAtlas;
+import model.entities.Entity;
 
 public class GameRenderer {
 
@@ -70,9 +71,23 @@ public class GameRenderer {
 
     private void renderPlayer(GraphicsContext gc, Player p, double ox, double oy) {
         if (p.isBlinking()) return;
+
         Image tex = textures.getPlayerTexture(p.getMoveDir());
         double size = p.getSize() * resolutionScale;
-        gc.drawImage(tex, p.getX() - size / 2 - ox, p.getY() - size / 2 - oy, size, size);
+        double drawX = p.getX() - size / 2 - ox;
+        double drawY = p.getY() - size / 2 - oy;
+
+        gc.drawImage(tex, drawX, drawY, size, size);
+
+        double cooldown = p.getDamageCooldown();
+        if (cooldown > 0) {
+            double alpha = (cooldown / Entity.DAMAGE_COOLDOWN_DURATION) * 0.6;
+            gc.save();
+            gc.setGlobalAlpha(alpha);
+            gc.setFill(Color.RED);
+            gc.fillRect(drawX, drawY, size, size);
+            gc.restore();
+        }
     }
 
     private void renderEnemies(GraphicsContext gc, GameWorld world, double ox, double oy) {

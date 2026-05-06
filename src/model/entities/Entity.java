@@ -10,7 +10,7 @@ public abstract class Entity {
     protected int health = 100;
     protected int contactDamage = 0;
     protected double damageCooldown = 0.0;
-    protected static final double DAMAGE_COOLDOWN_DURATION = 0.75;
+    public static final double DAMAGE_COOLDOWN_DURATION = 0.75;
     protected boolean dead = false;
 
     public boolean isDead() {

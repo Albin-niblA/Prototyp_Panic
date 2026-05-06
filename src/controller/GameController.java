@@ -13,6 +13,12 @@ import model.world.GameWorld;
 import model.weapon.WeaponType;
 import model.managers.SoundManager;
 import view.GameRenderer;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 public class GameController {
 
@@ -23,6 +29,7 @@ public class GameController {
     private final Camera camera;
     private final AnimationTimer gameLoop;
     private final GraphicsContext gc;
+    private final VBox pauseControls;
 
     private long lastTime = -1;
     private Runnable onReturnToMenu;
@@ -42,6 +49,32 @@ public class GameController {
         gc.setImageSmoothing(false);
 
         StackPane root = new StackPane(canvas);
+
+        Slider volumeSlider = new Slider(0, 1, SoundManager.getVolume());
+        volumeSlider.setPrefWidth(180 * resolutionScale);
+        volumeSlider.setShowTickMarks(false);
+        volumeSlider.setShowTickLabels(false);
+
+        Label volumeLabel = new Label(Math.round(SoundManager.getVolume() * 100) + "%");
+        volumeLabel.setStyle("-fx-text-fill: white; -fx-font-size: " + (int)(16 * resolutionScale) + "px;");
+
+        volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            SoundManager.setVolume(newVal.doubleValue());
+            volumeLabel.setText(Math.round(newVal.doubleValue() * 100) + "%");
+        });
+
+        HBox sliderRow = new HBox(10 * resolutionScale, volumeSlider, volumeLabel);
+        sliderRow.setAlignment(Pos.CENTER);
+
+        Label soundTitle = new Label("Sound Volume");
+        soundTitle.setStyle("-fx-text-fill: white; -fx-font-size: " + (int)(18 * resolutionScale) + "px;");
+
+        pauseControls = new VBox(8 * resolutionScale, soundTitle, sliderRow);
+        pauseControls.setAlignment(Pos.BOTTOM_CENTER);
+        pauseControls.setPadding(new Insets(0, 0, height * 0.12, 0));
+        pauseControls.setVisible(false);
+
+        root.getChildren().add(pauseControls);
         Scene scene = new Scene(root, width, height);
         input.attachTo(scene);
 
@@ -73,18 +106,19 @@ public class GameController {
         if (input.wasPressed(KeyCode.ESCAPE)) {
             if (world.getState() == GameState.RUNNING) {
                 world.pause();
+                pauseControls.setVisible(true);
             } else if (world.getState() == GameState.PAUSED) {
                 world.resume();
+                pauseControls.setVisible(false);
             }
         }
 
-        if (input.wasPressed(KeyCode.M)
-                && (world.getState() == GameState.PAUSED || world.getState() == GameState.GAME_OVER)) {
+        if (input.wasPressed(KeyCode.M) &&
+                (world.getState() == GameState.PAUSED || world.getState() == GameState.GAME_OVER)) {
             world.reset();
+            pauseControls.setVisible(false);
             gameLoop.stop();
-            if (onReturnToMenu != null) {
-                onReturnToMenu.run();
-            }
+            if (onReturnToMenu != null) onReturnToMenu.run();
             return;
         }
 

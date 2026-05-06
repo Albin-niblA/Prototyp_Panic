@@ -7,6 +7,7 @@ public class SoundManager {
     private static AudioClip hitSound;
     private static AudioClip deathSound;
     private static boolean initialized = false;
+    private static double volume = 1.0;
 
     public static void init() {
         if (initialized) return;
@@ -22,7 +23,17 @@ public class SoundManager {
         return url != null ? new AudioClip(url.toExternalForm()) : null;
     }
 
-    public static void playShoot() { if (shootSound != null) shootSound.play(); }
+    public static void setVolume(double v) {
+        volume = Math.max(0.0, Math.min(1.0, v));
+        if (shootSound != null) shootSound.setVolume(volume);
+        // add the same for hitSound, deathSound when you add them
+    }
+
+    public static double getVolume() {
+        return volume;
+    }
+
+    public static void playShoot() { if (shootSound != null) shootSound.play(volume);}
     public static void playHit()   { if (hitSound != null) hitSound.play(); }
     public static void playDeath() { if (deathSound != null) deathSound.play(); }
 }

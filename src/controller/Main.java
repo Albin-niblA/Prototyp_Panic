@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import model.managers.SoundManager;
 import model.weapon.WeaponType;
 import util.settings.ControlScheme;
 import util.settings.ControlSettings;
@@ -86,6 +87,11 @@ public class Main extends Application implements GameListener, SettingsListener 
     @Override
     public boolean isWasdActive() {
         return ControlSettings.getScheme() == ControlScheme.WASD;
+    }
+
+    @Override
+    public void onVolumeChanged(double volume) {
+        SoundManager.setVolume(volume);
     }
 
     public static void main(String[] args) {
