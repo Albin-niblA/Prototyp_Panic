@@ -162,7 +162,7 @@ public class ProjectileManager {
 
     public int checkPlayerHit(double playerX, double playerY, double playerRadius) {
         for (int i = 0; i < projectileCount; i++) {
-            if (!isEnemy[projectileCount]) continue;
+            if (!isEnemy[i]) continue;
             double dx = posX[i] - playerX;
             double dy = posY[i] - playerY;
             double dist = Math.sqrt(dx * dx + dy * dy);
