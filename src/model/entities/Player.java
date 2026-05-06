@@ -145,4 +145,16 @@ public class Player extends Entity {
         blinkVisibleTimer = 0;
         blinking = false;
     }
+
+    public int getXp() {
+        return xp;
+    }
+
+    public int getXpRequired() {
+        return (int) (100 * Math.pow(level, 1.5));
+    }
+
+    public int getLevel() {
+        return level;
+    }
 }

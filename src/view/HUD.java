@@ -21,6 +21,7 @@ public class HUD {
     public void draw(GraphicsContext gc, GameWorld world) {
         drawHealthBar(gc, world.getPlayer());
         drawWaveInfo(gc, world);
+        drawXpBar(gc, world.getPlayer());
     }
 
     private void drawHealthBar(GraphicsContext gc, Player p) {
@@ -59,5 +60,32 @@ public class HUD {
                 rightMargin, 35 * resolutionScale);
         gc.fillText("Enemies: " + world.getEnemyHandler().getCount(),
                 rightMargin, 65 * resolutionScale);
+    }
+
+    private void drawCoins(GraphicsContext gc, Player p){
+
+    }
+
+    private void drawXpBar(GraphicsContext gc, Player p){
+        double barWidth = screenWidth / 5.0;
+        double barHeight = screenHeight / 30.0;
+        double barX = screenWidth / 70.0;
+        double barY = screenHeight - screenHeight / 10.0;
+        double xpPct = (double) p.getXp()/p.getXpRequired();
+
+        gc.setFill(Color.BLACK);
+        gc.fillRect(barX, barY, barWidth, barHeight);
+        gc.setFill(Color.PURPLE);
+        gc.fillRect(barX, barY, barWidth * xpPct, barHeight);
+
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(2);
+        gc.strokeRect(barX, barY, barWidth, barHeight);
+
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Arial", 16 * resolutionScale));
+        gc.fillText("LVL " + p.getLevel() + "  XP: " + p.getXp() + " / " + p.getXpRequired(),
+                barX + 10, barY + barHeight * 0.75);
+
     }
 }
