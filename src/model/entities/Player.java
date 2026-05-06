@@ -10,6 +10,9 @@ public class Player extends Entity {
     private boolean moveLeft;
     private boolean moveRight;
     private int moveDir = 0; // 0=front, 1=back, 2=left, 3=right, 4=frontLeft, 5=frontRight, 6=backLeft, 7=backRight
+    private int coins = 0;
+    private int level = 1;
+    private int xp = 0;
 
     private EnumMap<Upgrades, Integer> upgrades = new EnumMap<>(Upgrades.class);
 
@@ -118,6 +121,9 @@ public class Player extends Entity {
     public void setBlinking(boolean v)      { blinking = v; }
     public double getBLINK_DISTANCE() { return BLINK_DISTANCE; }
     public void setBLINK_DISTANCE(double BLINK_DISTANCE) { this.BLINK_DISTANCE = BLINK_DISTANCE; }
+    public int getCoins() { return coins; }
+    public void setCoins(int coins) { this.coins = coins; }
+    public void addCoins(int coins) { this.coins = this.coins + coins; }
 
     public int getUpgradeLevel(Upgrades u) {
         return upgrades.getOrDefault(u, 0);
