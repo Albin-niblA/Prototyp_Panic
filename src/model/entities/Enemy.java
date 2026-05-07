@@ -6,6 +6,7 @@ public abstract class Enemy extends Entity {
     protected int textureID;
     protected int coinDropAmount;
     protected int xpDropAmount;
+    protected boolean isBoss = false;
 
     public Enemy(double x, double y, int size, int maxHealth, int movementSpeed,
                  int contactDamage, int textureID, int coinDropAmount, int xpDropAmount) {
@@ -17,6 +18,8 @@ public abstract class Enemy extends Entity {
         this.movementSpeed = movementSpeed;
         this.contactDamage = contactDamage;
         this.textureID = textureID;
+        this.coinDropAmount = coinDropAmount;
+        this.xpDropAmount = xpDropAmount;
     }
 
     public void update(double deltaTime, double playerX, double playerY) {
@@ -46,4 +49,6 @@ public abstract class Enemy extends Entity {
     public int getTextureID() {
         return textureID;
     }
+    public int getCoinDropAmount() { return coinDropAmount; }
+    public int getXpDropAmount() { return xpDropAmount; }
 }

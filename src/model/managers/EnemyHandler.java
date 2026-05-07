@@ -19,7 +19,7 @@ public class EnemyHandler {
         }
     }
 
-    public boolean checkHit(double px, double py, double pr, int damage) {
+    public Enemy checkHit(double px, double py, double pr, int damage) {
         Iterator<Enemy> it = enemies.iterator();
         while (it.hasNext()) {
             Enemy e = it.next();
@@ -30,10 +30,10 @@ public class EnemyHandler {
             if (dist < pr + e.getSize() / 2) {
                 e.takeProjectileDamage(damage);
                 if (e.isDead()) it.remove();
-                return true;
+                return e;
             }
         }
-        return false;
+        return null;
     }
 
     public int applyAoeDamage(double px, double py, double aoeRadius, int damage) {

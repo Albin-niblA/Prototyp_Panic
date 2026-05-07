@@ -10,7 +10,7 @@ import model.entities.enemies.Bandit;
 import java.util.Random;
 
 public class WaveManager {
-    private int currentWave = 3;
+    private int currentWave = 0;
     private double spawnTimer = 0;
     private int enemiesSpawnedThisWave = 0;
     private int enemiesPerWave = 5;

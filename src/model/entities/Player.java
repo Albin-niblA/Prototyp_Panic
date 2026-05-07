@@ -123,7 +123,18 @@ public class Player extends Entity {
     public void setBLINK_DISTANCE(double BLINK_DISTANCE) { this.BLINK_DISTANCE = BLINK_DISTANCE; }
     public int getCoins() { return coins; }
     public void setCoins(int coins) { this.coins = coins; }
-    public void addCoins(int coins) { this.coins = this.coins + coins; }
+    public void addCoins(int coins) { this.coins += coins; }
+
+    public boolean addXp(int xp) {
+        this.xp += xp;
+        int required = getXpRequired();
+        if (this.xp >= required) {
+            this.xp -= required;
+            level++;
+            return true;
+        }
+        return false;
+    }
 
     public int getUpgradeLevel(Upgrades u) {
         return upgrades.getOrDefault(u, 0);
@@ -151,7 +162,7 @@ public class Player extends Entity {
     }
 
     public int getXpRequired() {
-        return (int) (100 * Math.pow(level, 1.5));
+        return (int) (100 * Math.pow(level, 1.1));
     }
 
     public int getLevel() {

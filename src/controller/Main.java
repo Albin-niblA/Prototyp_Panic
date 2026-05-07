@@ -3,6 +3,7 @@ package controller;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.managers.SoundManager;
@@ -41,6 +42,8 @@ public class Main extends Application implements GameListener, SettingsListener 
         height = (int) screenBounds.getHeight();
         resolutionScale = Math.min((double) width / BASE_WIDTH, (double) height / BASE_HEIGHT);
         stage.setFullScreen(true);
+        stage.setFullScreenExitHint("");
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
     }
 
     private void showMainMenu() {

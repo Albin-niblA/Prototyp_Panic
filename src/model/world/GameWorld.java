@@ -125,7 +125,7 @@ public class GameWorld {
     }
 
     private void checkCollisions() {
-        // Projectile vs Enemy (skip grenades — they only damage on explosion)
+        // Projectile vs Enemy (skip grenades - they only damage on explosion)
         for (int i = 0; i < projectileManager.getCount(); i++) {
             if (projectileManager.isGrenade(i)) continue;
 
@@ -136,9 +136,13 @@ public class GameWorld {
             int dmg = projectileManager.getDamage(i);
 
             if (!isEnemy) {
-                if (enemyHandler.checkHit(px, py, pr, dmg)) {
+                Enemy e = enemyHandler.checkHit(px, py, pr, dmg);
+                if (e != null) {
                     projectileManager.deleteProjectile(i--);
                     effectManager.addEffect(px, py, 0, System.nanoTime());
+                    if (e.isDead() && player.addXp(e.getXpDropAmount())) {
+                        upgrade();
+                    }
                 }
             }
         }

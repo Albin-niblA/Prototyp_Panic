@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import model.world.Camera;
@@ -79,9 +80,9 @@ public class GameController {
         input.attachTo(scene);
 
         stage.setScene(scene);
-        stage.setFullScreen(true);
         stage.setTitle("Prototype Panic");
         stage.setResizable(false);
+        stage.setFullScreen(true);
 
         gameLoop = new AnimationTimer() {
             @Override
@@ -124,10 +125,6 @@ public class GameController {
 
         if (input.wasPressed(KeyCode.R) && world.getState() == GameState.GAME_OVER) {
             world.reset();
-        }
-
-        if (input.wasPressed(KeyCode.F4)) {
-            world.upgrade();
         }
 
         if (input.wasMouseClicked()) {

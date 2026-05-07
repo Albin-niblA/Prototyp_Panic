@@ -83,7 +83,7 @@ public class GameRenderer {
         if (p.isBlinking()) return;
 
         Image tex = textures.getPlayerTexture(p.getMoveDir());
-        double size = p.getSize() * resolutionScale;
+        double size = p.getSize();
         double drawX = p.getX() - size / 2 - ox;
         double drawY = p.getY() - size / 2 - oy;
 
@@ -104,8 +104,8 @@ public class GameRenderer {
         for (Enemy e : world.getEnemyHandler().getEnemies()) {
             if (!camera.isVisible(e.getX(), e.getY(), e.getSize())) continue;
             Image tex = textures.getEnemyTexture(e.getTextureID());
-            double size = e.getSize() * resolutionScale;
-            gc.drawImage(tex, e.getX() - size / 2 - ox, e.getY() - size / 2 - oy, size, size);
+            double size = e.getSize();
+            gc.drawImage(tex, Math.round(e.getX() - size / 2 - ox), Math.round(e.getY() - size / 2 - oy), size, size);
         }
     }
 
@@ -115,7 +115,7 @@ public class GameRenderer {
             double py = pm.getY(i) - oy;
             if (isOffscreen(px, py)) continue;
 
-            double r = pm.getRadius(i) * resolutionScale;
+            double r = pm.getRadius(i);
             Image tex = textures.getProjectileTexture(pm.getTextureID(i));
 
             if (pm.isGrenade(i)) {
@@ -136,7 +136,7 @@ public class GameRenderer {
         double alpha = 0.15 + 0.25 * (1.0 - fuseRemaining);
         gc.setStroke(Color.rgb(255, 60, 30, alpha));
         gc.setLineWidth(2);
-        double explosionR = 150 * resolutionScale;
+        double explosionR = 150;
         gc.strokeOval(px - explosionR, py - explosionR, explosionR * 2, explosionR * 2);
     }
 
@@ -166,7 +166,7 @@ public class GameRenderer {
             int cols = (int) (sheet.getWidth() / EFFECT_FRAME_SIZE);
             int sx = (frame % cols) * EFFECT_FRAME_SIZE;
             int sy = (frame / cols) * EFFECT_FRAME_SIZE;
-            int size = (int) (em.getEffectSize(fxID) * resolutionScale);
+            int size = (int) (em.getEffectSize(fxID));
 
             gc.drawImage(sheet,
                     sx, sy, EFFECT_FRAME_SIZE, EFFECT_FRAME_SIZE,
