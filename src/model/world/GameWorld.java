@@ -152,6 +152,7 @@ public class GameWorld {
                 player.getX(), player.getY(), player.getSize() / 2
             );
             if (hitBy != null) {
+                SoundManager.playHit();
                 player.takeDamage(hitBy.getContactDamage());
                 if (player.isDead()) {
                     state = GameState.GAME_OVER;
