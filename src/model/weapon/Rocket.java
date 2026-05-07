@@ -2,7 +2,7 @@ package model.weapon;
 
 import model.managers.ProjectileManager;
 
-public class Rocket extends Shootable implements Upgrade{
+public class Rocket extends Shootable {
     private static final String NAME = "Rocket";
     private static final int BASE_DAMAGE = 50;
     private static final double BASE_FIRE_INTERVAL = 1;
@@ -15,14 +15,8 @@ public class Rocket extends Shootable implements Upgrade{
     }
 
     @Override
-    public void shoot(ProjectileManager pm, double originX, double originY, double targetX, double targetY) {
+    public void shoot(ProjectileManager pm, double originX, double originY, double targetX, double targetY, int bounce) {
         pm.addProjectile(originX, originY, getProjectileRadius(), targetX, targetY, getProjectileSpeed(),
-                getTextureId(), 0, getDamage(), false);
-    }
-
-    @Override
-    public void STAGE_ONE_UPGRADE_ONE(){
-        setFireInterval(0.2);
-        setProjectileRadius(300);
+                getTextureId(), 0, getDamage(), bounce, false);
     }
 }

@@ -2,7 +2,7 @@ package model.weapon;
 
 import model.managers.ProjectileManager;
 
-public class Grenade extends Weapon implements Upgrade {
+public class Grenade extends Weapon {
     private static final String NAME = "Grenade";
     private static final int BASE_DAMAGE = 75;
     private static final double BASE_FIRE_INTERVAL = 3;
@@ -23,23 +23,20 @@ public class Grenade extends Weapon implements Upgrade {
     }
 
     @Override
-    public void shoot(ProjectileManager pm, double originX, double originY, double targetX, double targetY) {
+    public void shoot(ProjectileManager pm, double originX, double originY, double targetX, double targetY, int bounce) {
         pm.addGrenade(originX, originY, getProjectileRadius(), targetX, targetY, getProjectileSpeed(), getTextureId(),
-                0, getDamage(), fuseTime, explosionRadius, false);
+                0, getDamage(), fuseTime, explosionRadius, bounce, false);
     }
 
     @Override
-    public void shootMultiple(ProjectileManager pm, double originX, double originY, double targetX, double targetY, int count) {
-        shoot(pm, originX, originY, targetX, targetY);
+    public void shootMultiple(ProjectileManager pm, double originX, double originY, double targetX, double targetY, int count, int bounce) {
+        for (int i = 0; i < count; i++) {
+            shoot(pm, originX, originY, targetX, targetY, bounce);
+        }
     }
 
     public double getFuseTime() { return fuseTime; }
     public void setFuseTime(double fuseTime) { this.fuseTime = fuseTime; }
     public double getExplosionRadius() { return explosionRadius; }
     public void setExplosionRadius(double explosionRadius) { this.explosionRadius = explosionRadius; }
-
-    @Override
-    public void STAGE_ONE_UPGRADE_ONE(){
-        setFireInterval(0.5);
-    }
 }

@@ -1,9 +1,18 @@
 package model.upgrades;
 
 public enum Upgrades {
-    Multishot("Shoot an additional projectile per level", 0, Rarity.Epic),
+    // Common
     Nimble("Faster projectile firerate and movespeed", 1, Rarity.Common),
-    Blink("Unlock blink movement. \nIncrease distance and reduce cooldown", 2, Rarity.Uncommon);
+    Healthy("Increase max health and health regeneration", 3, Rarity.Common),
+    Sharp("Deal more projectile damage", 4, Rarity.Common),
+
+    // Uncommon
+    Vampire("Heal for a part of your damage", 5, Rarity.Uncommon),
+    Blink("Unlock blink movement. \nIncrease distance and reduce cooldown", 2, Rarity.Uncommon),
+
+    // Epic
+    Multishot("Shoot an additional projectile per level", 0, Rarity.Epic),
+    Bounce("Projectiles bounce an additional time on walls", 6, Rarity.Epic);
 
     String description;
     int id;

@@ -8,14 +8,14 @@ public abstract class Shootable extends Weapon {
     }
 
     @Override
-    public void shoot(ProjectileManager pm, double originX, double originY, double targetX, double targetY) {
+    public void shoot(ProjectileManager pm, double originX, double originY, double targetX, double targetY, int bounce) {
         pm.addProjectile(originX, originY, getProjectileRadius(), targetX, targetY, getProjectileSpeed(),
-                getTextureId(), 0, getDamage(), false);
+                getTextureId(), 0, getDamage(), bounce, false);
     }
 
     @Override
-    public void shootMultiple(ProjectileManager pm, double originX, double originY, double targetX, double targetY, int count) {
+    public void shootMultiple(ProjectileManager pm, double originX, double originY, double targetX, double targetY, int count, int bounce) {
         pm.addProjectiles(originX, originY, getProjectileRadius(), targetX, targetY, getProjectileSpeed(),
-                getTextureId(), 0, getDamage(), count, false);
+                getTextureId(), 0, getDamage(), count, bounce, false);
     }
 }

@@ -80,7 +80,7 @@ public class GameRenderer {
     }
 
     private void renderPlayer(GraphicsContext gc, Player p, double ox, double oy) {
-        if (p.isBlinking()) return;
+        if (p.getUpgradeManager().isBlinking()) return;
 
         Image tex = textures.getPlayerTexture(p.getMoveDir());
         double size = p.getSize();

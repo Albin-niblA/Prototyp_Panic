@@ -11,7 +11,6 @@ import model.managers.EnemyHandler;
 import model.managers.ProjectileManager;
 import model.managers.SoundManager;
 import model.managers.WaveManager;
-import model.weapon.Upgrade;
 import model.weapon.Weapon;
 import model.weapon.WeaponType;
 
@@ -34,10 +33,10 @@ public class GameWorld {
     public GameWorld(WeaponType weaponType) {
         player = new Player(WORLD_WIDTH / 2.0, WORLD_HEIGHT / 2.0);
         enemyHandler = new EnemyHandler();
-        projectileManager = new ProjectileManager(WORLD_WIDTH, WORLD_HEIGHT);
         effectManager = new EffectManager();
         waveManager = new WaveManager();
-        upgradeManager = new UpgradeManager();
+        upgradeManager = player.getUpgradeManager();
+        projectileManager = new ProjectileManager(WORLD_WIDTH, WORLD_HEIGHT, upgradeManager);
         currentWeapon = Weapon.fromType(weaponType);
     }
 
@@ -56,7 +55,7 @@ public class GameWorld {
         if (input.wasPressed(KeyCode.SPACE)) {
             double oldX = player.getX();
             double oldY = player.getY();
-            if (player.tryBlink(WORLD_WIDTH, WORLD_HEIGHT)) {
+            if (upgradeManager.tryBlink(WORLD_WIDTH, WORLD_HEIGHT)) {
                 effectManager.addEffect(oldX, oldY, 1, now);
                 effectManager.addEffect(player.getX(), player.getY(), 2, now);
             }
@@ -64,21 +63,22 @@ public class GameWorld {
         player.update(delta, WORLD_WIDTH, WORLD_HEIGHT);
 
         // Shooting
+        int bounce = upgradeManager.getUpgradeLevel(Upgrades.Bounce);
         shootCooldown -= delta;
         if (shooting && shootCooldown <= 0) {
             double worldMouseX = input.getMouseX() + camera.getOffsetX();
             double worldMouseY = input.getMouseY() + camera.getOffsetY();
 
-            int multiLevel = player.getUpgradeLevel(Upgrades.Multishot);
+            int multiLevel = upgradeManager.getUpgradeLevel(Upgrades.Multishot);
             if (multiLevel == 0) {
                 currentWeapon.shoot(projectileManager,
                         player.getX(), player.getY(),
-                        worldMouseX, worldMouseY);
+                        worldMouseX, worldMouseY, bounce);
             } else {
                 currentWeapon.shootMultiple(projectileManager, player.getX(), player.getY(),
-                        worldMouseX, worldMouseY, multiLevel + 1);
+                        worldMouseX, worldMouseY, multiLevel + 1, bounce);
             }
-            shootCooldown = currentWeapon.getFireInterval() * (Math.pow(0.9, player.getUpgradeLevel(Upgrades.Nimble)));
+            shootCooldown = currentWeapon.getFireInterval() * player.getFirerateMultiplier();
             SoundManager.playShoot();
         }
 
@@ -90,11 +90,6 @@ public class GameWorld {
         checkCollisions();
         checkEnemyProjectileCollisions();
         waveManager.update(delta, enemyHandler, player.getX(), player.getY());
-
-        // TEMP: Upgrades activates with keybind
-        if(input.wasPressed(KeyCode.U) && currentWeapon instanceof Upgrade) {
-            ((Upgrade) currentWeapon).STAGE_ONE_UPGRADE_ONE();
-        }
     }
 
     private void checkGrenadeExplosions() {
@@ -133,7 +128,7 @@ public class GameWorld {
             double py = projectileManager.getY(i);
             double pr = projectileManager.getRadius(i);
             boolean isEnemy = projectileManager.getIsEnemy(i);
-            int dmg = projectileManager.getDamage(i);
+            int dmg = (int) (projectileManager.getDamage(i) * upgradeManager.getDamageMultiplier());
 
             if (!isEnemy) {
                 Enemy e = enemyHandler.checkHit(px, py, pr, dmg);
@@ -143,6 +138,7 @@ public class GameWorld {
                     if (e.isDead() && player.addXp(e.getXpDropAmount())) {
                         upgrade();
                     }
+                    player.addHealth((int) (dmg * upgradeManager.getLifesteal()));
                 }
             }
         }
@@ -200,7 +196,7 @@ public class GameWorld {
 
     public void applyCardUpgrade(Upgrades u) {
         if (u != null) {
-            player.levelUpgrade(u);
+            player.getUpgradeManager().levelUpgrade(u);
             state = GameState.RUNNING;
         }
     }

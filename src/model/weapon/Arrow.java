@@ -1,6 +1,6 @@
 package model.weapon;
 
-public class Arrow extends Shootable implements Upgrade {
+public class Arrow extends Shootable {
     private static final String NAME = "Arrow";
     private static final int BASE_DAMAGE = 25;
     private static final double BASE_FIRE_INTERVAL = 0.5;
@@ -10,11 +10,5 @@ public class Arrow extends Shootable implements Upgrade {
 
     public Arrow() {
         super(NAME, BASE_DAMAGE, BASE_FIRE_INTERVAL, BASE_PROJECTILE_SPEED, BASE_PROJECTILE_RADIUS, TEXTURE_ID);
-    }
-
-    @Override
-    public void STAGE_ONE_UPGRADE_ONE(){
-        setDamage(getDamage() + 25);
-
     }
 }

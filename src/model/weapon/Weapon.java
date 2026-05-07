@@ -21,8 +21,8 @@ public abstract class Weapon {
         this.textureId = textureId;
     }
 
-    public abstract void shoot(ProjectileManager pm, double originX, double originY, double targetX, double targetY);
-    public abstract void shootMultiple(ProjectileManager pm, double originX, double originY, double targetX, double targetY, int count);
+    public abstract void shoot(ProjectileManager pm, double originX, double originY, double targetX, double targetY, int bounce);
+    public abstract void shootMultiple(ProjectileManager pm, double originX, double originY, double targetX, double targetY, int count, int bounce);
 
     public static Weapon fromType(WeaponType type) {
         return switch (type) {
