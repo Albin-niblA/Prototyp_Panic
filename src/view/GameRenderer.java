@@ -98,6 +98,15 @@ public class GameRenderer {
             gc.fillRect(drawX, drawY, size, size);
             gc.restore();
         }
+
+        if (p.isFrozen()) {
+            double freezeAlpha = 0.4;
+            gc.save();
+            gc.setGlobalAlpha(freezeAlpha);
+            gc.setFill(Color.web("00F0FF"));
+            gc.fillRect(drawX, drawY, size, size);
+            gc.restore();
+        }
     }
 
     private void renderEnemies(GraphicsContext gc, GameWorld world, double ox, double oy) {

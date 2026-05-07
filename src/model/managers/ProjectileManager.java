@@ -28,6 +28,7 @@ public class ProjectileManager {
 
     private final double SPREAD_ANGLE = Math.toRadians(30); // spread of multiple projectiles shot at once
     Random rand = new Random();
+    private int lastHitEffectID = 0;
 
     public ProjectileManager(double worldWidth, double worldHeight, UpgradeManager upgradeManager) {
         this.worldWidth = worldWidth;
@@ -205,6 +206,7 @@ public class ProjectileManager {
 
             if (dist < radius[i] + playerRadius) {
                 int dmg = damage[i];
+                lastHitEffectID = effectID[i];
                 deleteProjectile(i);
                 return dmg;
             }
@@ -228,4 +230,5 @@ public class ProjectileManager {
     public double getFuseTimer(int i) { return fuseTimer[i]; }
     public double getExplosionRadius(int i) { return explosionRadius[i]; }
     public boolean getIsEnemy(int i) { return isEnemy[i]; }
+    public int getLastHitEffectID() { return lastHitEffectID; }
 }

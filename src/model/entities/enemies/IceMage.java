@@ -5,13 +5,21 @@ import model.managers.ProjectileManager;
 
 public class IceMage extends Enemy {
 
-    // Shooting
+    // Shooting: basic attack
     private static final double SHOOT_COOLDOWN = 1.5;
     private static final double PROJECTILE_SPEED = 750;
     private static final double PROJECTILE_RADIUS = 20; // Var 8 innan
     private static final int PROJECTILE_DAMAGE = 20;
-    private static final int PROJECTILE_TEXTURE_ID = 1; // arrow.png atm (gör egen projektil)
+    private static final int PROJECTILE_TEXTURE_ID_BASIC = 1; // arrow.png atm (gör egen projektil)
     private double shootTimer = 0;
+
+    // Shooting: special attack (every 5th shot)
+    private static final int SPECIAL_ATTACK_INTERVAL = 5;
+    private static final double SPECIAL_PROJECTILE_SPEED = 500;
+    private static final int SPECIAL_PROJECTILE_DAMAGE = 20;
+    private static final int PROJECTILE_TEXTURE_ID_SPECIAL = 2; // rocket atm (gör egen projektil)
+    private static final int FREEZE_EFFECT_ID = 1;
+    private int shotCounter = 0;
 
     // Movement
     private static final double PREFERRED_DISTANCE = 300;
@@ -65,11 +73,24 @@ public class IceMage extends Enemy {
         // Shooting
         shootTimer -= deltaTime;
         if (shootTimer <= 0 && dist < 500) {
-            projectileManager.addProjectile(
-                    x, y, PROJECTILE_RADIUS,
-                    playerX, playerY,
-                    PROJECTILE_SPEED, PROJECTILE_TEXTURE_ID, 0, PROJECTILE_DAMAGE, 0, true
-            );
+            shotCounter++;
+            if (shotCounter >= SPECIAL_ATTACK_INTERVAL) {
+                // Special freeze attack
+                projectileManager.addProjectile(
+                        x, y, PROJECTILE_RADIUS,
+                        playerX, playerY,
+                        SPECIAL_PROJECTILE_SPEED, PROJECTILE_TEXTURE_ID_SPECIAL,
+                        FREEZE_EFFECT_ID, SPECIAL_PROJECTILE_DAMAGE, 0, true
+                );
+                shotCounter = 0;
+            } else {
+                // Basic attack
+                projectileManager.addProjectile(
+                        x, y, PROJECTILE_RADIUS,
+                        playerX, playerY,
+                        PROJECTILE_SPEED, PROJECTILE_TEXTURE_ID_BASIC, 0, PROJECTILE_DAMAGE, 0, true
+                );
+            }
             shootTimer = SHOOT_COOLDOWN;
         }
     }

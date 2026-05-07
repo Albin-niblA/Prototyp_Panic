@@ -18,6 +18,7 @@ public class Player extends Entity {
     private int healthRegen = 0;
     private final double REGEN_TIMER_DURATION = 0.5;
     private double healthRegenTimer = REGEN_TIMER_DURATION;
+    private double freezeTimer = 0;
 
     private UpgradeManager upgradeManager = new UpgradeManager(this);
 
@@ -40,34 +41,38 @@ public class Player extends Entity {
     }
 
     public void update(double deltaTime, double mapWidth, double mapHeight) {
-        double dx = 0;
-        double dy = 0;
+        if (freezeTimer > 0) freezeTimer -= deltaTime;
 
-        if      ( moveDown && !moveLeft && !moveRight) moveDir = 0;
-        else if ( moveUp   && !moveLeft && !moveRight) moveDir = 1;
-        else if ( moveLeft && !moveUp   && !moveDown)  moveDir = 2;
-        else if ( moveRight&& !moveUp   && !moveDown)  moveDir = 3;
-        else if ( moveDown &&  moveLeft)               moveDir = 4;
-        else if ( moveDown)                            moveDir = 5;
-        else if ( moveUp   &&  moveLeft)               moveDir = 6;
-        else if ( moveUp)                              moveDir = 7;
+        if (freezeTimer <= 0) {
+            double dx = 0;
+            double dy = 0;
 
-        if (moveUp)    dy -= 1;
-        if (moveDown)  dy += 1;
-        if (moveLeft)  dx -= 1;
-        if (moveRight) dx += 1;
+            if      ( moveDown && !moveLeft && !moveRight) moveDir = 0;
+            else if ( moveUp   && !moveLeft && !moveRight) moveDir = 1;
+            else if ( moveLeft && !moveUp   && !moveDown)  moveDir = 2;
+            else if ( moveRight&& !moveUp   && !moveDown)  moveDir = 3;
+            else if ( moveDown &&  moveLeft)               moveDir = 4;
+            else if ( moveDown)                            moveDir = 5;
+            else if ( moveUp   &&  moveLeft)               moveDir = 6;
+            else if ( moveUp)                              moveDir = 7;
 
-        if (dx != 0 && dy != 0) {
-            double factor = 1.0 / Math.sqrt(2);
-            dx *= factor;
-            dy *= factor;
+            if (moveUp)    dy -= 1;
+            if (moveDown)  dy += 1;
+            if (moveLeft)  dx -= 1;
+            if (moveRight) dx += 1;
+
+            if (dx != 0 && dy != 0) {
+                double factor = 1.0 / Math.sqrt(2);
+                dx *= factor;
+                dy *= factor;
+            }
+
+            x += dx * movementSpeed * deltaTime;
+            y += dy * movementSpeed * deltaTime;
+
+            x = Math.max(size / 2, Math.min(mapWidth - size / 2, x));
+            y = Math.max(size / 2, Math.min(mapHeight - size / 2, y));
         }
-
-        x += dx * movementSpeed * deltaTime;
-        y += dy * movementSpeed * deltaTime;
-
-        x = Math.max(size / 2, Math.min(mapWidth - size / 2, x));
-        y = Math.max(size / 2, Math.min(mapHeight - size / 2, y));
 
         if (damageCooldown > 0)    damageCooldown -= deltaTime;
         if (healthRegenTimer <= 0) {
@@ -101,6 +106,7 @@ public class Player extends Entity {
         y = startY;
         health = maxHealth;
         damageCooldown = 0;
+        freezeTimer = 0;
         dead = false;
         moveUp = moveDown = moveLeft = moveRight = false;
     }
@@ -146,5 +152,17 @@ public class Player extends Entity {
 
     public void setHealthRegen(int healthRegen) {
         this.healthRegen = healthRegen;
+    }
+
+    public void applyFreeze(double duration) {
+        freezeTimer = duration;
+    }
+
+    public boolean isFrozen() {
+        return freezeTimer > 0;
+    }
+
+    public double getFreezeTimer() {
+        return freezeTimer;
     }
 }

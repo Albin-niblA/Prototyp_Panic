@@ -112,6 +112,9 @@ public class GameWorld {
         );
         if (dmg > 0) {
             player.takeDamage(dmg);
+            if (projectileManager.getLastHitEffectID() == 1) {
+                player.applyFreeze(1.5);
+            }
             if (player.isDead()) {
                 state = GameState.GAME_OVER;
                 shooting = false;
