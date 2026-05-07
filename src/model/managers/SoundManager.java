@@ -13,7 +13,7 @@ public class SoundManager {
         if (initialized) return;
         shootSound = loadClip("/util/sounds/shoot.wav");
         // Ready for when sound files are added:
-        // hitSound = loadClip("/util/sounds/hit.wav");
+        hitSound = loadClip("/util/sounds/taking_damage.wav");
         // deathSound = loadClip("/util/sounds/death.wav");
         initialized = true;
     }
@@ -26,7 +26,7 @@ public class SoundManager {
     public static void setVolume(double v) {
         volume = Math.max(0.0, Math.min(1.0, v));
         if (shootSound != null) shootSound.setVolume(volume);
-        // add the same for hitSound, deathSound when you add them
+        if (hitSound   != null) hitSound.setVolume(volume);
     }
 
     public static double getVolume() {
@@ -34,6 +34,6 @@ public class SoundManager {
     }
 
     public static void playShoot() { if (shootSound != null) shootSound.play(volume);}
-    public static void playHit()   { if (hitSound != null) hitSound.play(); }
+    public static void playHit() { if (hitSound != null) hitSound.play(volume); }
     public static void playDeath() { if (deathSound != null) deathSound.play(); }
 }
