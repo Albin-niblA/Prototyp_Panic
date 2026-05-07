@@ -6,6 +6,7 @@ public class SoundManager {
     private static AudioClip shootSound;
     private static AudioClip hitSound;
     private static AudioClip deathSound;
+    private static AudioClip teleportSound;
     private static boolean initialized = false;
     private static double volume = 1.0;
 
@@ -15,6 +16,8 @@ public class SoundManager {
         // Ready for when sound files are added:
         hitSound = loadClip("/util/sounds/taking_damage.wav");
         // deathSound = loadClip("/util/sounds/death.wav");
+        teleportSound = loadClip("/util/sounds/teleport.wav");
+
         initialized = true;
     }
 
@@ -35,5 +38,6 @@ public class SoundManager {
 
     public static void playShoot() { if (shootSound != null) shootSound.play(volume);}
     public static void playHit() { if (hitSound != null) hitSound.play(volume); }
+    public static void playTeleport() { if (teleportSound != null) teleportSound.play(volume); }
     public static void playDeath() { if (deathSound != null) deathSound.play(); }
 }

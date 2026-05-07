@@ -58,6 +58,7 @@ public class GameWorld {
             if (upgradeManager.tryBlink(WORLD_WIDTH, WORLD_HEIGHT)) {
                 effectManager.addEffect(oldX, oldY, 1, now);
                 effectManager.addEffect(player.getX(), player.getY(), 2, now);
+                SoundManager.playTeleport();
             }
         }
         player.update(delta, WORLD_WIDTH, WORLD_HEIGHT);
