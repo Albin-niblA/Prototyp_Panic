@@ -19,7 +19,7 @@ public class EnemyHandler {
         }
     }
 
-    public Enemy checkHit(double px, double py, double pr, int damage) {
+    public Enemy checkHit(double px, double py, double pr, int damage, double slowMultiplier, double poisonDamage, double DOTDuration, double electricMultiplier) {
         Iterator<Enemy> it = enemies.iterator();
         while (it.hasNext()) {
             Enemy e = it.next();
@@ -29,11 +29,28 @@ public class EnemyHandler {
 
             if (dist < pr + e.getSize() / 2) {
                 e.takeProjectileDamage(damage);
+                applyElectricDamage((int) (damage * electricMultiplier), e);
+                e.takeDOTDamage(poisonDamage, DOTDuration);
+                e.setMovementSpeed(e.getMovementSpeed() * slowMultiplier);
                 if (e.isDead()) it.remove();
                 return e;
             }
         }
         return null;
+    }
+
+    private void applyElectricDamage(int damage, Enemy e) {
+        int targets = 3;
+        if (damage > 0) {
+            for (Enemy enemy : enemies) {
+                if (targets > 0) {
+                    if (enemy != e) {
+                        enemy.takeProjectileDamage(damage);
+                        targets--;
+                    }
+                }
+            }
+        }
     }
 
     public int applyAoeDamage(double px, double py, double aoeRadius, int damage) {

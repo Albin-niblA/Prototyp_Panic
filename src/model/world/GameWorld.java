@@ -2,6 +2,7 @@ package model.world;
 
 import controller.InputHandler;
 import javafx.scene.input.KeyCode;
+import java.util.Random;
 import model.managers.UpgradeManager;
 import model.upgrades.Upgrades;
 import model.entities.Enemy;
@@ -25,6 +26,7 @@ public class GameWorld {
     private final WaveManager waveManager;
     private final Weapon currentWeapon;
     private final UpgradeManager upgradeManager;
+    private Random rand = new Random();
 
     private GameState state = GameState.RUNNING;
     private double shootCooldown = 0;
@@ -63,20 +65,20 @@ public class GameWorld {
         player.update(delta, WORLD_WIDTH, WORLD_HEIGHT);
 
         // Shooting
-        int bounce = upgradeManager.getUpgradeLevel(Upgrades.Bounce);
+        int bounce = upgradeManager.getBounceAmount();
         shootCooldown -= delta;
         if (shooting && shootCooldown <= 0) {
             double worldMouseX = input.getMouseX() + camera.getOffsetX();
             double worldMouseY = input.getMouseY() + camera.getOffsetY();
 
-            int multiLevel = upgradeManager.getUpgradeLevel(Upgrades.Multishot);
-            if (multiLevel == 0) {
+            int shotAmount = upgradeManager.getShotAmount();
+            if (shotAmount == 1) {
                 currentWeapon.shoot(projectileManager,
                         player.getX(), player.getY(),
                         worldMouseX, worldMouseY, bounce);
             } else {
                 currentWeapon.shootMultiple(projectileManager, player.getX(), player.getY(),
-                        worldMouseX, worldMouseY, multiLevel + 1, bounce);
+                        worldMouseX, worldMouseY, shotAmount, bounce);
             }
             shootCooldown = currentWeapon.getFireInterval() * player.getFirerateMultiplier();
             SoundManager.playShoot();
@@ -134,11 +136,12 @@ public class GameWorld {
             int dmg = (int) (projectileManager.getDamage(i) * upgradeManager.getDamageMultiplier());
 
             if (!isEnemy) {
-                Enemy e = enemyHandler.checkHit(px, py, pr, dmg);
+                Enemy e = enemyHandler.checkHit(px, py, pr, dmg, upgradeManager.getSlowMultiplier(),
+                        upgradeManager.getPoisonDamage(), upgradeManager.getEFFECT_OVER_TIME_TICK_INTERVAL(), upgradeManager.getElectricDamageMultiplier());
                 if (e != null) {
                     projectileManager.deleteProjectile(i--);
                     effectManager.addEffect(px, py, 0, System.nanoTime());
-                    if (e.isDead() && player.addXp(e.getXpDropAmount())) {
+                    if (e.isDead() && player.addXp((int) (e.getXpDropAmount() * upgradeManager.getFortunateMultiplier()))) {
                         upgrade();
                     }
                     player.addHealth((int) (dmg * upgradeManager.getLifesteal()));
@@ -152,10 +155,12 @@ public class GameWorld {
                 player.getX(), player.getY(), player.getSize() / 2
             );
             if (hitBy != null) {
-                player.takeDamage(hitBy.getContactDamage());
-                if (player.isDead()) {
-                    state = GameState.GAME_OVER;
-                    shooting = false;
+                if (rand.nextDouble() > upgradeManager.getAngeltouchChance()) {
+                    player.takeDamage(hitBy.getContactDamage());
+                    if (player.isDead()) {
+                        state = GameState.GAME_OVER;
+                        shooting = false;
+                    }
                 }
             }
         }

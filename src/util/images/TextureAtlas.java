@@ -9,7 +9,7 @@ public class TextureAtlas {
     private final Image[] enemyTextures = new Image[6];
     private final Image[] projectileTextures = new Image[4];
     private final Image[] fxTextures = new Image[3];
-    private final Image[] upgradeIcons = new Image[7];
+    private final Image[] upgradeIcons = new Image[12];
     private Image[] mapSheet = new Image[6];
 
     public TextureAtlas() {
@@ -38,13 +38,18 @@ public class TextureAtlas {
         fxTextures[1] = load("/util/images/fx/blinkStart.png");
         fxTextures[2] = load("/util/images/fx/blinkEnd.png");
 
-        upgradeIcons[0] = load("/util/images/upgradeIcons/multishotIcon.png");
-        upgradeIcons[1] = load("/util/images/upgradeIcons/nimbleIcon.png");
-        upgradeIcons[2] = load("/util/images/upgradeIcons/blinkIcon.png");
-        upgradeIcons[3] = load("/util/images/upgradeIcons/healthyIcon.png");
-        upgradeIcons[4] = load("/util/images/upgradeIcons/sharpIcon.png");
-        upgradeIcons[5] = load("/util/images/upgradeIcons/vampireIcon.png");
-        upgradeIcons[6] = load("/util/images/upgradeIcons/bounceIcon.png");
+        upgradeIcons[0] = load("/util/images/upgradeIcons/nimbleIcon.png");
+        upgradeIcons[1] = load("/util/images/upgradeIcons/healthyIcon.png");
+        upgradeIcons[2] = load("/util/images/upgradeIcons/sharpIcon.png");
+        upgradeIcons[3] = load("/util/images/upgradeIcons/vampireIcon.png");
+        upgradeIcons[4] = load("/util/images/upgradeIcons/blinkIcon.png");
+        upgradeIcons[5] = load("/util/images/upgradeIcons/fortunateIcon.png");
+        upgradeIcons[6] = load("/util/images/upgradeIcons/frostbulletIcon.png");
+        upgradeIcons[7] = load("/util/images/upgradeIcons/poisonbulletIcon.png");
+        upgradeIcons[8] = load("/util/images/upgradeIcons/angeltouchIcon.png");
+        upgradeIcons[9] = load("/util/images/upgradeIcons/multishotIcon.png");
+        upgradeIcons[10] = load("/util/images/upgradeIcons/bounceIcon.png");
+        upgradeIcons[11] = load("/util/images/upgradeIcons/electricIcon.png");
 
         mapSheet = loadSheet("/util/images/map.png", 32, 32);
     }

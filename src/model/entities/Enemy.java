@@ -7,6 +7,10 @@ public abstract class Enemy extends Entity {
     protected int coinDropAmount;
     protected int xpDropAmount;
     protected boolean isBoss = false;
+    protected double DOTTimer = 0;
+    protected final static double DOT_TICK_SPEED = 0.5;
+    protected double DOTCurrentTick = 0;
+    protected double DOTDamage = 0;
 
     public Enemy(double x, double y, int size, int maxHealth, int movementSpeed,
                  int contactDamage, int textureID, int coinDropAmount, int xpDropAmount) {
@@ -31,6 +35,15 @@ public abstract class Enemy extends Entity {
             x += (dx / dist) * movementSpeed * deltaTime;
             y += (dy / dist) * movementSpeed * deltaTime;
         }
+
+        if (DOTTimer > 0) {
+            DOTTimer -= deltaTime;
+            DOTCurrentTick -= deltaTime;
+            if (DOTCurrentTick <= 0) {
+                takeProjectileDamage((int) (maxHealth * DOTDamage));
+                DOTCurrentTick = DOT_TICK_SPEED;
+            }
+        } else DOTDamage = 0;
     }
 
     public void update(double deltaTime, double playerX, double playerY,
@@ -46,9 +59,25 @@ public abstract class Enemy extends Entity {
         }
     }
 
+    public void takeDOTDamage(double damage, double timer) {
+        if (damage > 0) {
+            DOTDamage += damage;
+            DOTTimer = timer;
+        }
+    }
+
     public int getTextureID() {
         return textureID;
     }
     public int getCoinDropAmount() { return coinDropAmount; }
     public int getXpDropAmount() { return xpDropAmount; }
+    public double getDOTTimer() {
+        return DOTTimer;
+    }
+    public void setDOTTimer(double DOTTimer) {
+        this.DOTTimer = DOTTimer;
+    }
+    public double getDOTTickSpeed() {
+        return DOT_TICK_SPEED;
+    }
 }
