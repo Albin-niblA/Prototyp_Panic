@@ -82,29 +82,31 @@ public class GameRenderer {
     private void renderPlayer(GraphicsContext gc, Player p, double ox, double oy) {
         if (p.getUpgradeManager().isBlinking()) return;
 
-        Image tex = textures.getPlayerTexture(p.getMoveDir());
+        int dir = p.getMoveDir();
         double size = p.getSize();
         double drawX = p.getX() - size / 2 - ox;
         double drawY = p.getY() - size / 2 - oy;
 
-        gc.drawImage(tex, drawX, drawY, size, size);
+        // Draw the normal sprite
+        gc.drawImage(textures.getPlayerTexture(dir), drawX, drawY, size, size);
 
+        // Red flash on damage: overlay a pre-baked solid-red version of the sprite
+        // at fading alpha. Because tintImage() preserves per-pixel alpha, only the
+        // opaque parts of the character light up — never the transparent background.
         double cooldown = p.getDamageCooldown();
         if (cooldown > 0) {
-            double alpha = (cooldown / Entity.DAMAGE_COOLDOWN_DURATION) * 0.6;
+            double t = cooldown / Entity.DAMAGE_COOLDOWN_DURATION;
             gc.save();
-            gc.setGlobalAlpha(alpha);
-            gc.setFill(Color.RED);
-            gc.fillRect(drawX, drawY, size, size);
+            gc.setGlobalAlpha(t * 0.7);
+            gc.drawImage(textures.getPlayerRedTexture(dir), drawX, drawY, size, size);
             gc.restore();
         }
 
+        // Blue tint when frozen: same approach with a pre-baked blue sprite
         if (p.isFrozen()) {
-            double freezeAlpha = 0.4;
             gc.save();
-            gc.setGlobalAlpha(freezeAlpha);
-            gc.setFill(Color.web("00F0FF"));
-            gc.fillRect(drawX, drawY, size, size);
+            gc.setGlobalAlpha(0.5);
+            gc.drawImage(textures.getPlayerBlueTexture(dir), drawX, drawY, size, size);
             gc.restore();
         }
     }
@@ -138,7 +140,7 @@ public class GameRenderer {
     }
 
     private void drawGrenadeFuseIndicator(GraphicsContext gc, ProjectileManager pm,
-                                           int i, double px, double py) {
+                                          int i, double px, double py) {
         double fuseRemaining = pm.getFuseTimer(i);
         if (fuseRemaining >= 1.0) return;
 
