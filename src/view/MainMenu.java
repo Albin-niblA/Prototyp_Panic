@@ -26,8 +26,8 @@ public class MainMenu {
     private final Scene scene;
     private final AnimationTimer starAnimation;
 
-    private static final Color COLOR_DEFAULT = Color.web("#4488FF");
-    private static final Color COLOR_HOVER_A = Color.web("#CC44FF");
+    private static final Color COLOR_DEFAULT = Color.web("#66FF44");
+    private static final Color COLOR_HOVER_A = Color.web("#44FFCC");
     private static final Color COLOR_HOVER_B = Color.WHITE;
     private static final Color COLOR_OUTLINE = Color.BLACK;
     private static final Color COLOR_TITLE = Color.GREEN;
