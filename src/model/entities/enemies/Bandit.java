@@ -19,7 +19,7 @@ public class Bandit extends Enemy {
     private int strafeDirection = 1;
 
     public Bandit(double x, double y) {
-        super(x, y, 100, 300, 100, 10, 2, 10, 30);
+        super(x, y, 100, 300, 100, 10, 2, 80, 30);
         this.strafeDirection = Math.random() < 0.5 ? 1 : -1;
     }
 
