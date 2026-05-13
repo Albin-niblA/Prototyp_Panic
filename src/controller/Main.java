@@ -61,20 +61,23 @@ public class Main extends Application implements GameListener, SettingsListener 
     @Override
     public void onButtonClicked(ButtonType type) {
         switch (type) {
-            case START -> {
-                WeaponSelectDialog dialog = new WeaponSelectDialog(stage, resolutionScale);
-                WeaponType weapon = dialog.showAndWait();
-                GameController gc = new GameController(stage, width, height, resolutionScale, weapon);
-                gc.setOnReturnToMenu(() -> {
-                    activeGame = null;
-                    showMainMenu();
-                });
-                activeGame = gc;
-                gc.start();
-            }
+            case START -> new WeaponSelectDialog(
+                    stage, this::startGame, this::showMainMenu,
+                    width, height, resolutionScale
+            ).show();
             case SETTINGS -> new SettingsMenu(stage, this, this::showMainMenu, width, height, resolutionScale).show();
             case EXIT -> shutdown();
         }
+    }
+
+    private void startGame(WeaponType weapon) {
+        GameController gc = new GameController(stage, width, height, resolutionScale, weapon);
+        gc.setOnReturnToMenu(() -> {
+            activeGame = null;
+            showMainMenu();
+        });
+        activeGame = gc;
+        gc.start();
     }
 
     @Override

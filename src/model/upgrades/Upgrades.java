@@ -14,7 +14,7 @@ public enum Upgrades {
     // Rare
     Frostbullet("Projectiles slow enemies", 6, Rarity.Rare),
     Poisonbullet("Enemies hit take poison damage for 3 seconds", 7, Rarity.Rare),
-    Angeltouch("Increase the chance of not taking damage from an enemy hit", 8, Rarity.Rare),
+    Angeltouch("Increase the chance of \nnot taking damage from an enemy hit", 8, Rarity.Rare),
 
     // Epic
     Multishot("Shoot an additional projectile per level", 9, Rarity.Epic),
