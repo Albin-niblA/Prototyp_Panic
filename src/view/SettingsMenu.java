@@ -264,7 +264,7 @@ public class SettingsMenu {
         box.setAlignment(Pos.CENTER);
         menuLayer.getChildren().add(box);
     }
-    
+
     private Text createMenuItem(String label, Runnable action) {
         Text item = new Text(label);
         item.setFont(pixelFont);
