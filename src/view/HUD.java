@@ -22,6 +22,7 @@ public class HUD {
         drawHealthBar(gc, world.getPlayer());
         drawWaveInfo(gc, world);
         drawXpBar(gc, world.getPlayer());
+        drawCoins(gc, world);
     }
 
     private void drawHealthBar(GraphicsContext gc, Player p) {
@@ -62,8 +63,27 @@ public class HUD {
                 rightMargin, 65 * resolutionScale);
     }
 
-    private void drawCoins(GraphicsContext gc, Player p){
+    private void drawCoins(GraphicsContext gc, GameWorld world) {
+        int coins = world.getMyntManager().getBalance();
+        String text = "Mynt: " + coins;
 
+        // Samma X som HP/XP-barerna, precis ovanför XP-baren
+        double barX      = screenWidth / 70.0;
+        double barHeight = screenHeight / 30.0;
+        double xpBarY    = screenHeight - screenHeight / 10.0;
+        double coinY     = xpBarY - barHeight * 0.3; // lite ovanför XP-baren
+
+        gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT);
+        gc.setFont(javafx.scene.text.Font.font("Arial",
+                javafx.scene.text.FontWeight.BOLD, 18 * resolutionScale));
+
+        // Svart skugga för läsbarhet
+        gc.setFill(Color.BLACK);
+        gc.fillText(text, barX + 1, coinY + 1);
+
+        // Gul text
+        gc.setFill(Color.GOLD);
+        gc.fillText(text, barX, coinY);
     }
 
     private void drawXpBar(GraphicsContext gc, Player p){

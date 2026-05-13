@@ -27,7 +27,7 @@ public class IceMage extends Enemy {
     private int strafeDirection = 1;
 
     public IceMage(double x, double y) {
-        super(x, y, 100, 500, 200, 10, 3, 20, 100);
+        super(x, y, 100, 500, 200, 10, 3, 100, 100);
         this.strafeDirection = Math.random() < 0.5 ? 1 : -1;
     }
 

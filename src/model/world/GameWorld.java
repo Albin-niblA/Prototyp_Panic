@@ -14,6 +14,7 @@ import model.managers.SoundManager;
 import model.managers.WaveManager;
 import model.weapon.Weapon;
 import model.weapon.WeaponType;
+import model.managers.MyntManager;
 
 public class GameWorld {
     public static final int WORLD_WIDTH = 3200;
@@ -26,6 +27,8 @@ public class GameWorld {
     private final WaveManager waveManager;
     private final Weapon currentWeapon;
     private final UpgradeManager upgradeManager;
+
+    private final MyntManager myntManager;
     private Random rand = new Random();
 
     private GameState state = GameState.RUNNING;
@@ -38,6 +41,7 @@ public class GameWorld {
         effectManager = new EffectManager();
         waveManager = new WaveManager();
         upgradeManager = player.getUpgradeManager();
+        myntManager = new MyntManager();
         projectileManager = new ProjectileManager(WORLD_WIDTH, WORLD_HEIGHT, upgradeManager);
         currentWeapon = Weapon.fromType(weaponType);
     }
@@ -142,8 +146,11 @@ public class GameWorld {
                 if (e != null) {
                     projectileManager.deleteProjectile(i--);
                     effectManager.addEffect(px, py, 0, System.nanoTime());
-                    if (e.isDead() && player.addXp((int) (e.getXpDropAmount() * upgradeManager.getFortunateMultiplier()))) {
-                        upgrade();
+                    if (e.isDead()) {
+                        myntManager.earn(e.getCoinDropAmount());   // ← mynt-drop
+                        if (player.addXp((int) (e.getXpDropAmount() * upgradeManager.getFortunateMultiplier()))) {
+                            upgrade();
+                        }
                     }
                     player.addHealth((int) (dmg * upgradeManager.getLifesteal()));
                 }
@@ -220,5 +227,8 @@ public class GameWorld {
     public EffectManager getEffectManager() { return effectManager; }
     public UpgradeManager getUpgradeManager() {
         return upgradeManager;
+    }
+    public MyntManager getMyntManager(){
+        return myntManager;
     }
 }
