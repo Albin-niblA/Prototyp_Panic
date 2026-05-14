@@ -1,16 +1,16 @@
 package model.managers;
 
-public class MyntManager {
+public class CoinManager {
     private int balance = 0;
 
-    //Lägger till mynt
+    // Adds coins
     public void earn(int amount){
         if(amount > 0){
             balance += amount;
         }
     }
 
-    //Tar bort mynt
+    // Removes coins
     public boolean spend(int amount){
         if(amount <= 0){
             return true;
@@ -21,7 +21,7 @@ public class MyntManager {
         balance -= amount;
         return true;
     }
-    //kolla om man har råd
+    // Checks if player can afford
     public boolean canAfford(int amount){
         return balance >= amount;
     }

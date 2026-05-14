@@ -10,7 +10,6 @@ public class Player extends Entity {
     private boolean moveLeft;
     private boolean moveRight;
     private int moveDir = 0; // 0=front, 1=back, 2=left, 3=right, 4=frontLeft, 5=frontRight, 6=backLeft, 7=backRight
-    private int coins = 0;
     private int level = 0;
     private int xp = 0;
     private double flatMoveSpeed = movementSpeed;
@@ -86,9 +85,6 @@ public class Player extends Entity {
     }
 
     public int getMoveDir()                 { return moveDir; }
-    public int getCoins() { return coins; }
-    public void setCoins(int coins) { this.coins = coins; }
-    public void addCoins(int coins) { this.coins += coins; }
 
     public boolean addXp(int xp) {
         this.xp += xp;

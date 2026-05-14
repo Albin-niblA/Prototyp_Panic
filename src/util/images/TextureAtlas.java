@@ -16,6 +16,7 @@ public class TextureAtlas {
     private final Image[] fxTextures = new Image[3];
     private final Image[] upgradeIcons = new Image[12];
     private Image[] mapSheet = new Image[6];
+    private Image[] assetTextures = new Image[1];
 
     public TextureAtlas() {
         playerTextures[0] = load("/util/images/player/pFront.png");
@@ -60,6 +61,8 @@ public class TextureAtlas {
         upgradeIcons[9]  = load("/util/images/upgradeIcons/multishotIcon.png");
         upgradeIcons[10] = load("/util/images/upgradeIcons/bounceIcon.png");
         upgradeIcons[11] = load("/util/images/upgradeIcons/electricIcon.png");
+
+        assetTextures[0] = load("/util/images/assets/coin.png");
 
         mapSheet = loadSheet("/util/images/map.png", 32, 32);
     }
@@ -113,5 +116,6 @@ public class TextureAtlas {
     public Image getProjectileTexture(int id)  { return projectileTextures[id]; }
     public Image getEffectTexture(int fxID)    { return fxTextures[fxID]; }
     public Image getUpgradeIcon(int iconID)    { return upgradeIcons[iconID]; }
+    public Image getAsset(int assetID) { return assetTextures[assetID]; }
     public Image[] getMapSheet()               { return mapSheet; }
 }

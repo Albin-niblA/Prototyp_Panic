@@ -267,4 +267,12 @@ public class UpgradeManager {
     public int getShotAmount() {
         return shotAmount;
     }
+
+    public double getBLINK_COOLDOWN_DURATION() {
+        return BLINK_COOLDOWN_DURATION;
+    }
+
+    public double getBlinkCooldown() {
+        return blinkCooldown;
+    }
 }

@@ -34,7 +34,7 @@ public class GameRenderer {
         this.gridSize = (int) (60 * resolutionScale);
         this.camera = camera;
         this.textures = new TextureAtlas();
-        this.hud = new HUD(viewportWidth, viewportHeight, resolutionScale);
+        this.hud = new HUD(viewportWidth, viewportHeight, resolutionScale, textures);
         this.overlay = new OverlayHandler(viewportWidth, viewportHeight, resolutionScale, upgradeManager, textures);
     }
 
@@ -47,7 +47,7 @@ public class GameRenderer {
         renderPlayer(gc, world.getPlayer(), ox, oy);
         renderEnemies(gc, world, ox, oy);
         renderEffects(gc, world.getEffectManager(), ox, oy);
-        hud.draw(gc, world);
+        hud.draw(gc, world, world.getUpgradeManager().getBLINK_COOLDOWN_DURATION(), world.getUpgradeManager().getBlinkCooldown());
         overlay.draw(gc, world.getState());
     }
 

@@ -14,7 +14,7 @@ import model.managers.SoundManager;
 import model.managers.WaveManager;
 import model.weapon.Weapon;
 import model.weapon.WeaponType;
-import model.managers.MyntManager;
+import model.managers.CoinManager;
 
 public class GameWorld {
     public static final int WORLD_WIDTH = 3200;
@@ -28,7 +28,7 @@ public class GameWorld {
     private final Weapon currentWeapon;
     private final UpgradeManager upgradeManager;
 
-    private final MyntManager myntManager;
+    private final CoinManager coinManager;
     private Random rand = new Random();
 
     private GameState state = GameState.RUNNING;
@@ -41,7 +41,7 @@ public class GameWorld {
         effectManager = new EffectManager();
         waveManager = new WaveManager();
         upgradeManager = player.getUpgradeManager();
-        myntManager = new MyntManager();
+        coinManager = new CoinManager();
         projectileManager = new ProjectileManager(WORLD_WIDTH, WORLD_HEIGHT, upgradeManager);
         currentWeapon = Weapon.fromType(weaponType);
     }
@@ -147,7 +147,7 @@ public class GameWorld {
                     projectileManager.deleteProjectile(i--);
                     effectManager.addEffect(px, py, 0, System.nanoTime());
                     if (e.isDead()) {
-                        myntManager.earn(e.getCoinDropAmount());   // ← mynt-drop
+                        coinManager.earn(e.getCoinDropAmount());   // ← mynt-drop
                         if (player.addXp((int) (e.getXpDropAmount() * upgradeManager.getFortunateMultiplier()))) {
                             upgrade();
                         }
@@ -228,7 +228,7 @@ public class GameWorld {
     public UpgradeManager getUpgradeManager() {
         return upgradeManager;
     }
-    public MyntManager getMyntManager(){
-        return myntManager;
+    public CoinManager getCoinManager(){
+        return coinManager;
     }
 }
