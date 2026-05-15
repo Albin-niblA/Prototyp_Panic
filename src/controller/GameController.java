@@ -5,9 +5,10 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import model.score.ScoreEntry;
+import model.score.ScoreManager;
 import model.world.Camera;
 import model.world.GameState;
 import model.world.GameWorld;
@@ -31,12 +32,17 @@ public class GameController {
     private final AnimationTimer gameLoop;
     private final GraphicsContext gc;
     private final VBox pauseControls;
+    private final ScoreManager scoreManager;
 
     private long lastTime = -1;
     private Runnable onReturnToMenu;
+    private Runnable onReturnToSetup;
+    private boolean gameOverScoreSet = false;
 
-    public GameController(Stage stage, int width, int height, double resolutionScale, WeaponType weaponType) {
+    public GameController(Stage stage, int width, int height, double resolutionScale,
+                          WeaponType weaponType, ScoreManager scoreManager) {
         this.stage = stage;
+        this.scoreManager = scoreManager;
 
         SoundManager.init();
 
@@ -114,9 +120,44 @@ public class GameController {
             }
         }
 
+        if (world.getState() == GameState.GAME_OVER) {
+            // Set the score on the overlay once when entering game over
+            if (!gameOverScoreSet) {
+                int score = world.getScore();
+                boolean qualifies = scoreManager.qualifies(score);
+                renderer.getOverlay().setGameOverScore(score, qualifies);
+                gameOverScoreSet = true;
+            }
+
+            // Handle initials entry input
+            if (renderer.getOverlay().isInitialsEntryActive()) {
+                if (input.wasPressed(KeyCode.UP) || input.wasPressed(KeyCode.W)) {
+                    renderer.getOverlay().cycleInitialUp();
+                }
+                if (input.wasPressed(KeyCode.DOWN) || input.wasPressed(KeyCode.S)) {
+                    renderer.getOverlay().cycleInitialDown();
+                }
+                if (input.wasPressed(KeyCode.LEFT) || input.wasPressed(KeyCode.A)) {
+                    renderer.getOverlay().moveCursorLeft();
+                }
+                if (input.wasPressed(KeyCode.RIGHT) || input.wasPressed(KeyCode.D)) {
+                    renderer.getOverlay().moveCursorRight();
+                }
+                if (input.wasPressed(KeyCode.ENTER)) {
+                    String name = renderer.getOverlay().confirmInitials();
+                    if (name != null) {
+                        scoreManager.addScore(new ScoreEntry(name, world.getScore()));
+                    }
+                }
+                // Block R/M while entering initials
+                return;
+            }
+        }
+
         if (input.wasPressed(KeyCode.M) &&
                 (world.getState() == GameState.PAUSED || world.getState() == GameState.GAME_OVER)) {
             world.reset();
+            gameOverScoreSet = false;
             pauseControls.setVisible(false);
             gameLoop.stop();
             if (onReturnToMenu != null) onReturnToMenu.run();
@@ -124,7 +165,10 @@ public class GameController {
         }
 
         if (input.wasPressed(KeyCode.R) && world.getState() == GameState.GAME_OVER) {
-            world.reset();
+            gameOverScoreSet = false;
+            gameLoop.stop();
+            if (onReturnToSetup != null) onReturnToSetup.run();
+            return;
         }
 
         if (input.wasMouseClicked()) {
@@ -142,6 +186,10 @@ public class GameController {
 
     public void setOnReturnToMenu(Runnable callback) {
         this.onReturnToMenu = callback;
+    }
+
+    public void setOnReturnToSetup(Runnable callback) {
+        this.onReturnToSetup = callback;
     }
 
     public void start() {

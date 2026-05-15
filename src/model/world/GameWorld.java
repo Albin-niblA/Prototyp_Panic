@@ -231,4 +231,10 @@ public class GameWorld {
     public CoinManager getCoinManager(){
         return coinManager;
     }
+
+    public int getScore() {
+        return (waveManager.getCurrentWave() * 1000)
+                + coinManager.getBalance()
+                + (player.getLevel() * 500);
+    }
 }

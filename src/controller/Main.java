@@ -6,6 +6,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import model.score.ScoreManager;
 import model.managers.SoundManager;
 import model.weapon.WeaponType;
 import util.settings.ControlScheme;
@@ -14,6 +15,7 @@ import view.ButtonType;
 import view.GameListener;
 import view.MainMenu;
 import util.settings.SettingsListener;
+import view.ScoreboardMenu;
 import view.SettingsMenu;
 import view.WeaponSelectDialog;
 
@@ -27,6 +29,7 @@ public class Main extends Application implements GameListener, SettingsListener 
     private int height;
     private double resolutionScale;
     private GameController activeGame;
+    private final ScoreManager scoreManager = new ScoreManager();
 
     @Override
     public void start(Stage stage) {
@@ -61,20 +64,29 @@ public class Main extends Application implements GameListener, SettingsListener 
     @Override
     public void onButtonClicked(ButtonType type) {
         switch (type) {
-            case START -> new WeaponSelectDialog(
-                    stage, this::startGame, this::showMainMenu,
-                    width, height, resolutionScale
-            ).show();
+            case START -> showGameSetup();
             case SETTINGS -> new SettingsMenu(stage, this, this::showMainMenu, width, height, resolutionScale).show();
+            case SCOREBOARD -> new ScoreboardMenu(stage, scoreManager, this::showMainMenu, width, height, resolutionScale).show();
             case EXIT -> shutdown();
         }
     }
 
+    private void showGameSetup() {
+        new WeaponSelectDialog(
+                stage, this::startGame, this::showMainMenu,
+                width, height, resolutionScale
+        ).show();
+    }
+
     private void startGame(WeaponType weapon) {
-        GameController gc = new GameController(stage, width, height, resolutionScale, weapon);
+        GameController gc = new GameController(stage, width, height, resolutionScale, weapon, scoreManager);
         gc.setOnReturnToMenu(() -> {
             activeGame = null;
             showMainMenu();
+        });
+        gc.setOnReturnToSetup(() -> {
+            activeGame = null;
+            showGameSetup();
         });
         activeGame = gc;
         gc.start();

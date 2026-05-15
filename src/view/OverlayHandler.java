@@ -17,6 +17,7 @@ import model.upgrades.Upgrades;
 import model.world.GameState;
 import util.images.TextureAtlas;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,16 @@ public class OverlayHandler {
     private double mouseX;
     private double mouseY;
 
+    // Score & initials entry state
+    private int displayedScore = 0;
+    private boolean showInitialsEntry = false;
+    private final char[] initials = {'A', 'A', 'A'};
+    private int cursorPos = 0;
+    private boolean initialsConfirmed = false;
+    private Font pixelFont;
+    private Font pixelFontLarge;
+    private Font pixelFontSmall;
+
     public OverlayHandler(int width, int height, double resolutionScale,
                           UpgradeManager upgradeManager, TextureAtlas textures) {
         this.width = width;
@@ -41,6 +52,26 @@ public class OverlayHandler {
         this.resolutionScale = resolutionScale;
         this.upgradeManager = upgradeManager;
         this.textures = textures;
+        loadPixelFonts();
+    }
+
+    private void loadPixelFonts() {
+        InputStream fontStream = getClass().getResourceAsStream("/util/fonts/PressStart2P.ttf");
+        if (fontStream != null) {
+            Font loaded = Font.loadFont(fontStream, 20 * resolutionScale);
+            if (loaded != null) {
+                pixelFont = loaded;
+                // Reload at different sizes
+                fontStream = getClass().getResourceAsStream("/util/fonts/PressStart2P.ttf");
+                pixelFontLarge = Font.loadFont(fontStream, 40 * resolutionScale);
+                fontStream = getClass().getResourceAsStream("/util/fonts/PressStart2P.ttf");
+                pixelFontSmall = Font.loadFont(fontStream, 14 * resolutionScale);
+                return;
+            }
+        }
+        pixelFont = Font.font("Monospaced", 20 * resolutionScale);
+        pixelFontLarge = Font.font("Monospaced", 40 * resolutionScale);
+        pixelFontSmall = Font.font("Monospaced", 14 * resolutionScale);
     }
 
     public void draw(GraphicsContext gc, GameState state) {
@@ -60,10 +91,141 @@ public class OverlayHandler {
     }
 
     private void drawGameOver(GraphicsContext gc) {
-        drawCenteredOverlay(gc, 0.65,
-                "YOU LOST!", 72, Color.web("#FF4444"), height / 2.0 - 30 * resolutionScale,
-                new String[]{"Press R to play again", "Press M to go back to main menu"},
-                height / 2.0 + 30 * resolutionScale);
+        dimBackground(gc, 0.65);
+        gc.setTextAlign(TextAlignment.CENTER);
+
+        double centerX = width / 2.0;
+        double baseY = height * 0.25;
+
+        // "YOU LOST!" title
+        gc.setFill(Color.web("#FF4444"));
+        gc.setFont(pixelFontLarge);
+        gc.fillText("YOU LOST!", centerX, baseY);
+
+        // Score display
+        gc.setFill(Color.WHITE);
+        gc.setFont(pixelFont);
+        gc.fillText("SCORE", centerX, baseY + 60 * resolutionScale);
+
+        gc.setFill(Color.GOLD);
+        gc.setFont(pixelFontLarge);
+        gc.fillText(formatScore(displayedScore), centerX, baseY + 110 * resolutionScale);
+
+        if (showInitialsEntry && !initialsConfirmed) {
+            // "NEW HIGH SCORE!" flash
+            gc.setFill(Color.web("#FFD700"));
+            gc.setFont(pixelFont);
+            gc.fillText("NEW HIGH SCORE!", centerX, baseY + 160 * resolutionScale);
+
+            // "ENTER YOUR INITIALS"
+            gc.setFill(Color.LIGHTGRAY);
+            gc.setFont(pixelFontSmall);
+            gc.fillText("ENTER YOUR INITIALS", centerX, baseY + 200 * resolutionScale);
+
+            // Draw the 3 initial slots
+            double slotSpacing = 60 * resolutionScale;
+            double initialsY = baseY + 260 * resolutionScale;
+            double startX = centerX - slotSpacing;
+
+            gc.setFont(pixelFontLarge);
+            for (int i = 0; i < 3; i++) {
+                double slotX = startX + i * slotSpacing;
+
+                // Up arrow indicator for selected slot
+                if (i == cursorPos) {
+                    gc.setFill(Color.web("#44FFCC"));
+                    gc.setFont(pixelFontSmall);
+                    gc.fillText("^", slotX, initialsY - 35 * resolutionScale);
+                    gc.setFont(pixelFontLarge);
+                }
+
+                // The letter
+                gc.setFill(i == cursorPos ? Color.web("#44FFCC") : Color.WHITE);
+                gc.fillText(String.valueOf(initials[i]), slotX, initialsY);
+
+                // Down arrow indicator for selected slot
+                if (i == cursorPos) {
+                    gc.setFill(Color.web("#44FFCC"));
+                    gc.setFont(pixelFontSmall);
+                    gc.fillText("v", slotX, initialsY + 25 * resolutionScale);
+                    gc.setFont(pixelFontLarge);
+                }
+
+                // Underline
+                double underY = initialsY + 8 * resolutionScale;
+                double underW = 30 * resolutionScale;
+                gc.setStroke(i == cursorPos ? Color.web("#44FFCC") : Color.gray(0.5));
+                gc.setLineWidth(3 * resolutionScale);
+                gc.strokeLine(slotX - underW / 2, underY, slotX + underW / 2, underY);
+            }
+
+            // Instructions
+            gc.setFill(Color.LIGHTGRAY);
+            gc.setFont(pixelFontSmall);
+            double instrY = initialsY + 60 * resolutionScale;
+            gc.fillText("UP/DOWN = Change letter", centerX, instrY);
+            gc.fillText("LEFT/RIGHT = Move slot", centerX, instrY + 25 * resolutionScale);
+            gc.fillText("ENTER = Confirm", centerX, instrY + 50 * resolutionScale);
+        } else {
+            // Normal hints (after confirm or if doesn't qualify)
+            double hintsY = showInitialsEntry
+                    ? baseY + 180 * resolutionScale
+                    : baseY + 160 * resolutionScale;
+            gc.setFill(Color.LIGHTGRAY);
+            gc.setFont(pixelFontSmall);
+            gc.fillText("Press R to restart", centerX, hintsY);
+            gc.fillText("Press M to go back to main menu", centerX, hintsY + 25 * resolutionScale);
+        }
+    }
+
+    private String formatScore(int score) {
+        return String.format("%,d", score);
+    }
+
+    public void setGameOverScore(int score, boolean qualifies) {
+        this.displayedScore = score;
+        this.showInitialsEntry = qualifies;
+        this.initialsConfirmed = false;
+        this.cursorPos = 0;
+        this.initials[0] = 'A';
+        this.initials[1] = 'A';
+        this.initials[2] = 'A';
+    }
+
+    public void cycleInitialUp() {
+        if (initialsConfirmed) return;
+        initials[cursorPos]--;
+        if (initials[cursorPos] < 'A') initials[cursorPos] = 'Z';
+    }
+
+    public void cycleInitialDown() {
+        if (initialsConfirmed) return;
+        initials[cursorPos]++;
+        if (initials[cursorPos] > 'Z') initials[cursorPos] = 'A';
+    }
+
+    public void moveCursorLeft() {
+        if (initialsConfirmed) return;
+        cursorPos = Math.max(0, cursorPos - 1);
+    }
+
+    public void moveCursorRight() {
+        if (initialsConfirmed) return;
+        cursorPos = Math.min(2, cursorPos + 1);
+    }
+
+    public String confirmInitials() {
+        if (initialsConfirmed) return null;
+        initialsConfirmed = true;
+        return new String(initials);
+    }
+
+    public boolean isInitialsEntryActive() {
+        return showInitialsEntry && !initialsConfirmed;
+    }
+
+    public boolean isInitialsConfirmed() {
+        return initialsConfirmed;
     }
 
     private void drawUpgrade(GraphicsContext gc) {

@@ -9,7 +9,6 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -17,50 +16,47 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.managers.SoundManager;
-import util.settings.SettingsListener;
+import model.score.ScoreEntry;
+import model.score.ScoreManager;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Random;
 
-public class SettingsMenu {
+public class ScoreboardMenu {
 
     private static final Color COLOR_DEFAULT = Color.web("#66FF44");
     private static final Color COLOR_HOVER_A = Color.web("#44FFCC");
     private static final Color COLOR_HOVER_B = Color.WHITE;
     private static final Color COLOR_OUTLINE = Color.BLACK;
     private static final Color COLOR_TITLE = Color.GREEN;
-    private static final Color COLOR_ACTIVE = Color.web("#66FF44");
-    private static final Color COLOR_INACTIVE = Color.web("#888888");
-    private static final Color COLOR_LABEL = Color.web("#AAFFAA");
+    private static final Color COLOR_HEADER = Color.web("#AAFFAA");
+    private static final Color COLOR_GOLD = Color.web("#FFD700");
+    private static final Color COLOR_SILVER = Color.web("#C0C0C0");
+    private static final Color COLOR_BRONZE = Color.web("#CD7F32");
+    private static final Color COLOR_NORMAL = Color.WHITE;
+    private static final Color COLOR_EMPTY = Color.gray(0.4);
+    private static final Color COLOR_DIVIDER = Color.web("#44FF44");
     private static final int STAR_COUNT = 500;
+    private static final int MAX_DISPLAY = 10;
+
+    private static final String[] RANK_LABELS = {
+            "1ST", "2ND", "3RD", "4TH", "5TH",
+            "6TH", "7TH", "8TH", "9TH", "10TH"
+    };
 
     private final Stage stage;
     private final Scene scene;
     private final AnimationTimer starAnimation;
-    private final SettingsListener listener;
-    private final double resolutionScale;
-    private final Runnable onBack;
-    private final int width;
-    private final int height;
 
-    private VBox menuLayer;
-    private StackPane root;
-    private Font pixelFont;
-    private Font titleFont;
-    private Font smallFont;
-
-    public SettingsMenu(Stage stage, SettingsListener listener, Runnable onBack, int width, int height, double resolutionScale) {
+    public ScoreboardMenu(Stage stage, ScoreManager scoreManager, Runnable onBack,
+                          int width, int height, double resolutionScale) {
         this.stage = stage;
-        this.listener = listener;
-        this.onBack = onBack;
-        this.width = width;
-        this.height = height;
-        this.resolutionScale = resolutionScale;
 
-        pixelFont = loadPixelFont(20 * resolutionScale);
-        titleFont = loadPixelFont(34 * resolutionScale);
-        smallFont = loadPixelFont(14 * resolutionScale);
+        Font titleFont = loadPixelFont(34 * resolutionScale);
+        Font headerFont = loadPixelFont(14 * resolutionScale);
+        Font entryFont = loadPixelFont(16 * resolutionScale);
+        Font menuFont = loadPixelFont(20 * resolutionScale);
 
         Canvas starCanvas = new Canvas(width, height);
         GraphicsContext gc = starCanvas.getGraphicsContext2D();
@@ -184,13 +180,77 @@ public class SettingsMenu {
             }
         };
 
-        menuLayer = new VBox();
-        menuLayer.setAlignment(Pos.CENTER);
+        // Scoreboard
+        List<ScoreEntry> scores = scoreManager.getScores();
 
-        root = new StackPane(starCanvas, menuLayer);
+        VBox menuBox = new VBox(0);
+        menuBox.setAlignment(Pos.CENTER);
+
+        Text title = new Text("HIGH SCORES");
+        title.setFont(titleFont);
+        title.setFill(COLOR_TITLE);
+
+        Text headers = new Text(String.format("%-6s %-5s %10s", "RANK", "NAME", "SCORE"));
+        headers.setFont(headerFont);
+        headers.setFill(COLOR_HEADER);
+        headers.setStroke(COLOR_OUTLINE);
+        headers.setStrokeWidth(0.5);
+
+        Text dividerTop = new Text("______________________________");
+        dividerTop.setFont(headerFont);
+        dividerTop.setFill(COLOR_DIVIDER);
+
+        VBox scoreRows = new VBox(20 * resolutionScale);
+        scoreRows.setAlignment(Pos.CENTER);
+
+        for (int i = 0; i < MAX_DISPLAY; i++) {
+            String rank = RANK_LABELS[i];
+            String name;
+            String scoreStr;
+            Color rowColor;
+
+            if (i < scores.size()) {
+                ScoreEntry entry = scores.get(i);
+                name = entry.getInitials();
+                scoreStr = String.format("%,d", entry.getScore());
+                if (i == 0) rowColor = COLOR_GOLD;
+                else if (i == 1) rowColor = COLOR_SILVER;
+                else if (i == 2) rowColor = COLOR_BRONZE;
+                else rowColor = COLOR_NORMAL;
+            } else {
+                name = "---";
+                scoreStr = "-----";
+                rowColor = COLOR_EMPTY;
+            }
+
+            String rowText = String.format("%-6s %-5s %10s", rank, name, scoreStr);
+            Text row = new Text(rowText);
+            row.setFont(entryFont);
+            row.setFill(rowColor);
+            row.setStroke(COLOR_OUTLINE);
+            row.setStrokeWidth(0.5);
+            scoreRows.getChildren().add(row);
+        }
+
+        Text dividerBottom = new Text("______________________________");
+        dividerBottom.setFont(headerFont);
+        dividerBottom.setFill(COLOR_DIVIDER);
+
+        Text backItem = createMenuItem("Back", onBack, menuFont);
+
+        VBox content = new VBox(60 * resolutionScale);
+        content.setAlignment(Pos.CENTER);
+        content.getChildren().addAll(title);
+
+        VBox tableBox = new VBox(16 * resolutionScale);
+        tableBox.setAlignment(Pos.CENTER);
+        tableBox.getChildren().addAll(headers, dividerTop, scoreRows, dividerBottom);
+
+        content.getChildren().addAll(tableBox, backItem);
+        menuBox.getChildren().add(content);
+
+        StackPane root = new StackPane(starCanvas, menuBox);
         scene = new Scene(root, width, height);
-
-        showSettingsLanding();
 
         stage.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != scene) {
@@ -199,149 +259,9 @@ public class SettingsMenu {
         });
     }
 
-    private void showSettingsLanding() {
-        menuLayer.getChildren().clear();
-
-        Text title = new Text("SETTINGS");
-        title.setFont(titleFont);
-        title.setFill(COLOR_TITLE);
-
-        Text controlsItem = createMenuItem("Controls", this::showControlsPage);
-        Text audioItem = createMenuItem("Audio", this::showAudioPage);
-        Text backItem = createMenuItem("Back", onBack);
-
-        VBox box = new VBox(40 * resolutionScale, title, controlsItem, audioItem, backItem);
-        box.setAlignment(Pos.CENTER);
-        menuLayer.getChildren().add(box);
-    }
-
-    private void showControlsPage() {
-        menuLayer.getChildren().clear();
-
-        Text title = new Text("CONTROLS");
-        title.setFont(titleFont);
-        title.setFill(COLOR_TITLE);
-
-        Text subtitle = new Text("Select control scheme");
-        subtitle.setFont(smallFont);
-        subtitle.setFill(COLOR_LABEL);
-        subtitle.setStroke(COLOR_OUTLINE);
-        subtitle.setStrokeWidth(1);
-
-        Text wasdLabel = new Text("WASD");
-        wasdLabel.setFont(pixelFont);
-        wasdLabel.setStroke(COLOR_OUTLINE);
-        wasdLabel.setStrokeWidth(1.5);
-
-        Text arrowLabel = new Text("Arrow Keys");
-        arrowLabel.setFont(pixelFont);
-        arrowLabel.setStroke(COLOR_OUTLINE);
-        arrowLabel.setStrokeWidth(1.5);
-
-        Runnable updateColors = () -> {
-            boolean wasd = listener.isWasdActive();
-            wasdLabel.setFill(wasd ? COLOR_ACTIVE : COLOR_INACTIVE);
-            arrowLabel.setFill(wasd ? COLOR_INACTIVE : COLOR_ACTIVE);
-        };
-        updateColors.run();
-
-        wasdLabel.setCursor(Cursor.HAND);
-        arrowLabel.setCursor(Cursor.HAND);
-
-        wasdLabel.setOnMouseClicked(e -> {
-            listener.onWasdSelected();
-            updateColors.run();
-        });
-        arrowLabel.setOnMouseClicked(e -> {
-            listener.onArrowKeysSelected();
-            updateColors.run();
-        });
-
-        wasdLabel.setOnMouseEntered(e -> wasdLabel.setFill(COLOR_HOVER_A));
-        wasdLabel.setOnMouseExited(e -> updateColors.run());
-        arrowLabel.setOnMouseEntered(e -> arrowLabel.setFill(COLOR_HOVER_A));
-        arrowLabel.setOnMouseExited(e -> updateColors.run());
-
-        Text separator = new Text("/");
-        separator.setFont(pixelFont);
-        separator.setFill(COLOR_LABEL);
-        separator.setStroke(COLOR_OUTLINE);
-        separator.setStrokeWidth(1.5);
-
-        HBox toggleRow = new HBox(30 * resolutionScale, wasdLabel, separator, arrowLabel);
-        toggleRow.setAlignment(Pos.CENTER);
-
-        Text backItem = createMenuItem("Back", this::showSettingsLanding);
-
-        VBox box = new VBox(40 * resolutionScale, title, subtitle, toggleRow, backItem);
-        box.setAlignment(Pos.CENTER);
-        menuLayer.getChildren().add(box);
-    }
-
-    private void showAudioPage() {
-        menuLayer.getChildren().clear();
-
-        Text title = new Text("AUDIO");
-        title.setFont(titleFont);
-        title.setFill(COLOR_TITLE);
-
-        Text volumeLabel = new Text("Volume");
-        volumeLabel.setFont(smallFont);
-        volumeLabel.setFill(COLOR_LABEL);
-        volumeLabel.setStroke(COLOR_OUTLINE);
-        volumeLabel.setStrokeWidth(1);
-
-        int currentVol = (int) Math.round(SoundManager.getVolume() * 100);
-        Text volumeValue = new Text(currentVol + "%");
-        volumeValue.setFont(pixelFont);
-        volumeValue.setFill(COLOR_DEFAULT);
-        volumeValue.setStroke(COLOR_OUTLINE);
-        volumeValue.setStrokeWidth(1.5);
-
-        Text minus = new Text("-");
-        minus.setFont(pixelFont);
-        minus.setFill(COLOR_DEFAULT);
-        minus.setStroke(COLOR_OUTLINE);
-        minus.setStrokeWidth(1.5);
-        minus.setCursor(Cursor.HAND);
-
-        Text plus = new Text("+");
-        plus.setFont(pixelFont);
-        plus.setFill(COLOR_DEFAULT);
-        plus.setStroke(COLOR_OUTLINE);
-        plus.setStrokeWidth(1.5);
-        plus.setCursor(Cursor.HAND);
-
-        minus.setOnMouseEntered(e -> minus.setFill(COLOR_HOVER_A));
-        minus.setOnMouseExited(e -> minus.setFill(COLOR_DEFAULT));
-        plus.setOnMouseEntered(e -> plus.setFill(COLOR_HOVER_A));
-        plus.setOnMouseExited(e -> plus.setFill(COLOR_DEFAULT));
-
-        minus.setOnMouseClicked(e -> {
-            double vol = Math.max(0, SoundManager.getVolume() - 0.1);
-            listener.onVolumeChanged(vol);
-            volumeValue.setText(Math.round(vol * 100) + "%");
-        });
-
-        plus.setOnMouseClicked(e -> {
-            double vol = Math.min(1, SoundManager.getVolume() + 0.1);
-            listener.onVolumeChanged(vol);
-            volumeValue.setText(Math.round(vol * 100) + "%");
-        });
-
-        HBox volumeRow = new HBox(25 * resolutionScale, minus, volumeValue, plus);
-        volumeRow.setAlignment(Pos.CENTER);
-
-        Text backItem = createMenuItem("Back", this::showSettingsLanding);
-
-        VBox box = new VBox(40 * resolutionScale, title, volumeLabel, volumeRow, backItem);
-        box.setAlignment(Pos.CENTER);
-        menuLayer.getChildren().add(box);
-    }
-
-    private Text createMenuItem(String label, Runnable action) {
+    private Text createMenuItem(String label, Runnable action, Font font) {
         Text item = new Text(label);
-        item.setFont(pixelFont);
+        item.setFont(font);
         item.setFill(COLOR_DEFAULT);
         item.setStroke(COLOR_OUTLINE);
         item.setStrokeWidth(1.5);
@@ -383,7 +303,7 @@ public class SettingsMenu {
 
     public void show() {
         starAnimation.start();
-        stage.setTitle("Prototype Panic - Settings");
+        stage.setTitle("Prototype Panic - High Scores");
         stage.setScene(scene);
         stage.setFullScreen(true);
         stage.show();

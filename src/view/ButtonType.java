@@ -3,7 +3,7 @@ package view;
 public enum ButtonType {
     START("Start Game"),
     SETTINGS("Settings"),
-    SCOREBOARD("Scoreboard (Inte implementerat)"),
+    SCOREBOARD("Scoreboard"),
     EXIT("Exit");
 
     private final String label;

@@ -122,7 +122,7 @@ public class WeaponSelectDialog {
                     gc.fillOval(sx[i], sy[i], sSize[i], sSize[i]);
                 }
 
-                // --- Shooting star ---
+                // Shooting star
                 if (ssActive[0] == 0) {
                     ssCooldown[0] -= dt;
                     if (ssCooldown[0] <= 0) {
