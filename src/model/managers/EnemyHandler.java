@@ -19,7 +19,8 @@ public class EnemyHandler {
         }
     }
 
-    public Enemy checkHit(double px, double py, double pr, int damage, double slowMultiplier, double poisonDamage, double DOTDuration, double electricMultiplier) {
+    public Enemy checkHit(double px, double py, double pr, int damage, double slowMultiplier,
+                          double poisonDamage, double DOTDuration, double electricMultiplier) {
         Iterator<Enemy> it = enemies.iterator();
         while (it.hasNext()) {
             Enemy e = it.next();

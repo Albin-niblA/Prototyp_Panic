@@ -15,6 +15,7 @@ public class Player extends Entity {
     private double flatMoveSpeed = movementSpeed;
     private double flatHealth;
     private int healthRegen = 0;
+    private int bonusDamage = 0;
     private final double REGEN_TIMER_DURATION = 0.5;
     private double healthRegenTimer = REGEN_TIMER_DURATION;
     private double freezeTimer = 0;
@@ -161,4 +162,6 @@ public class Player extends Entity {
     public double getFreezeTimer() {
         return freezeTimer;
     }
+
+    public void addBonusDamage(int damage) { bonusDamage += damage; }
 }

@@ -28,6 +28,7 @@ public class UpgradeManager {
     private int shotAmount = 1;
     private int bounceAmount = 0;
     private final double EFFECT_OVER_TIME_TICK_INTERVAL = 0.25;
+    private int onHitDamage = 0;
 
     // Blink
     private double BLINK_DISTANCE = 200.0;
@@ -275,4 +276,10 @@ public class UpgradeManager {
     public double getBlinkCooldown() {
         return blinkCooldown;
     }
+
+    public int getOnHitDamage() {
+        return onHitDamage;
+    }
+
+    public void addOnHitDamage(int damage) { onHitDamage += damage; }
 }

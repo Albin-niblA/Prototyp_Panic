@@ -141,8 +141,9 @@ public class GameWorld {
             int dmg = (int) (projectileManager.getDamage(i) * upgradeManager.getDamageMultiplier());
 
             if (!isEnemy) {
-                Enemy e = enemyHandler.checkHit(px, py, pr, dmg, upgradeManager.getSlowMultiplier(),
-                        upgradeManager.getPoisonDamage(), upgradeManager.getEFFECT_OVER_TIME_TICK_INTERVAL(), upgradeManager.getElectricDamageMultiplier());
+                Enemy e = enemyHandler.checkHit(px, py, pr, dmg + upgradeManager.getOnHitDamage(), upgradeManager.getSlowMultiplier(),
+                        upgradeManager.getPoisonDamage(), upgradeManager.getEFFECT_OVER_TIME_TICK_INTERVAL(),
+                        upgradeManager.getElectricDamageMultiplier());
                 if (e != null) {
                     projectileManager.deleteProjectile(i--);
                     effectManager.addEffect(px, py, 0, System.nanoTime());
