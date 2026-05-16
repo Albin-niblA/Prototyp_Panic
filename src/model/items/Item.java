@@ -11,10 +11,11 @@ public class Item {
     private final int movementSpeed;
     private final int health;
     private final int damage;
-    private final int attackSpeed;
+    private final double attackSpeed;
     private final int onHit;
+    private final int blinkDistance;
 
-    public Item(String name, int textureID, int price, int movementSpeed, int health, int damage, int attackSpeed, int onHit) {
+    public Item(String name, int textureID, int price, int movementSpeed, int health, int damage, double attackSpeed, int onHit, int blinkDistance) {
         this.name = name;
         this.textureID = textureID;
         this.price = price;
@@ -23,6 +24,7 @@ public class Item {
         this.damage = damage;
         this.attackSpeed = attackSpeed;
         this.onHit = onHit;
+        this.blinkDistance = blinkDistance;
         formatDescription();
     }
 
@@ -41,6 +43,9 @@ public class Item {
         }
         if (onHit > 0) {
             description.add("Onhit damage: " + onHit);
+        }
+        if (blinkDistance > 0) {
+            description.add("Bonus blink distance: " + blinkDistance);
         }
     }
 
@@ -68,12 +73,16 @@ public class Item {
         return damage;
     }
 
-    public int getAttackSpeed() {
+    public double getAttackSpeed() {
         return attackSpeed;
     }
 
     public int getOnHit() {
         return onHit;
+    }
+
+    public int getBlinkDistance() {
+        return blinkDistance;
     }
 
     public int getPrice() {
