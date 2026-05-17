@@ -171,6 +171,14 @@ public class GameController {
             return;
         }
 
+        if (input.wasPressed(KeyCode.B)) {
+            if (world.getState() == GameState.RUNNING) {
+                world.openShop();
+            } else if (world.getState() == GameState.SHOP) {
+                world.closeShop();
+            }
+        }
+
         if (input.wasMouseClicked()) {
             world.toggleShooting();
         }

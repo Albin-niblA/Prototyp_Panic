@@ -79,6 +79,7 @@ public class OverlayHandler {
             case PAUSED -> drawPaused(gc);
             case GAME_OVER -> drawGameOver(gc);
             case UPGRADE -> drawUpgrade(gc);
+            case SHOP -> drawShop(gc);
             default -> { }
         }
     }
@@ -341,6 +342,9 @@ public class OverlayHandler {
     private void dimBackground(GraphicsContext gc, double opacity) {
         gc.setFill(Color.color(0, 0, 0, opacity));
         gc.fillRect(0, 0, width, height);
+    }
+    private void drawShop(GraphicsContext gc){
+        drawCenteredOverlay(gc,0.65, "SHOP",72,Color.GOLD, height/3.0,new String[]{"Press B to close"}, height/3.0 + 60 * resolutionScale);
     }
 
     public Upgrades getClickedCard() {

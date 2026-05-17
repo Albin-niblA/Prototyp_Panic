@@ -218,6 +218,18 @@ public class GameWorld {
             state = GameState.RUNNING;
         }
     }
+    public void openShop(){
+        if(state == GameState.RUNNING){
+            state = GameState.SHOP;
+            shooting = false;
+            player.setMoving(false, false, false,false);
+        }
+    }
+    public void closeShop(){
+        if(state == GameState.SHOP){
+            state = GameState.RUNNING;
+        }
+    }
 
     public GameState getState() { return state; }
     public Player getPlayer() { return player; }
