@@ -51,6 +51,7 @@ public class Main extends Application implements GameListener, SettingsListener 
 
     private void showMainMenu() {
         new MainMenu(stage, this, width, height, resolutionScale).show();
+        SoundManager.playMenuMusic();
     }
 
     private void shutdown() {
@@ -80,6 +81,8 @@ public class Main extends Application implements GameListener, SettingsListener 
 
     private void startGame(WeaponType weapon) {
         GameController gc = new GameController(stage, width, height, resolutionScale, weapon, scoreManager);
+        SoundManager.stopMenuMusic();
+        SoundManager.playGameMusic();
         gc.setOnReturnToMenu(() -> {
             activeGame = null;
             showMainMenu();

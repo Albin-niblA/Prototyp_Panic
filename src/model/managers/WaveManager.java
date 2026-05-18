@@ -13,7 +13,7 @@ public class WaveManager {
     private int currentWave = 0;
     private double spawnTimer = 0;
     private int enemiesSpawnedThisWave = 0;
-    private int enemiesPerWave = 5;
+    private int enemiesPerWave = 7;
     private double spawnInterval = 3.0;
     private boolean waveActive = false;
     private double betweenWaveTimer = 0;
@@ -45,7 +45,7 @@ public class WaveManager {
     private void startNextWave() {
         currentWave++;
         enemiesSpawnedThisWave = 0;
-        enemiesPerWave = 5 + (currentWave * 2);
+        enemiesPerWave = enemiesPerWave + (currentWave * 2);
         spawnInterval = Math.max(0.5, 3.0 - currentWave * 0.2);
         waveActive = true;
         spawnTimer = spawnInterval; // spawn first enemy immediately
