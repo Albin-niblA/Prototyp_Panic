@@ -229,7 +229,7 @@ public class WeaponSelectDialog {
             weaponRow.getChildren().add(wText);
         }
         updateWeaponColors.run();
-
+/*
         Text diffLabel = new Text("Difficulty");
         diffLabel.setFont(smallFont);
         diffLabel.setFill(COLOR_LABEL);
@@ -275,14 +275,14 @@ public class WeaponSelectDialog {
             diffRow.getChildren().add(dText);
         }
         updateDiffColors.run();
-
+*/
         Text startItem = createMenuItem("Start", () -> onStart.accept(selectedWeapon));
         Text backItem = createMenuItem("Back", onBack);
 
         VBox menuBox = new VBox(40 * resolutionScale,
                 title,
                 weaponLabel, weaponRow,
-                diffLabel, diffRow,
+                /*diffLabel, diffRow,*/
                 startItem, backItem
         );
         menuBox.setAlignment(Pos.CENTER);
